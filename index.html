@@ -338,6 +338,378 @@
             border-radius: 4px;
         }
 
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        .comparison-table th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:first-child:hover {
+            background: transparent;
+        }
+
+        /* Visual Risk Matrix Styles - matching Bow Tie tool */
+        .risk-matrix-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visual-risk-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 14px;
+            background: white;
+        }
+
+        .visual-risk-matrix th, .visual-risk-matrix td {
+            border: 2px solid #34495e;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            min-height: 50px;
+        }
+
+        .matrix-corner {
+            background: #34495e;
+            color: white;
+            font-size: 12px;
+            width: 120px;
+        }
+
+        .matrix-header {
+            background: #34495e;
+            color: white;
+            font-size: 13px;
+            padding: 8px 4px;
+        }
+
+        .consequence-header {
+            background: #34495e;
+            color: white;
+            font-size: 11px;
+            padding: 8px 4px;
+            min-width: 80px;
+        }
+
+        .likelihood-header {
+            background: #34495e;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            writing-mode: horizontal-tb;
+            width: 120px;
+        }
+
+        .matrix-cell {
+            position: relative;
+            height: 60px;
+            width: 80px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: default;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-cell.low {
+            background: #27ae60;
+            color: white;
+        }
+
+        .matrix-cell.medium {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .matrix-cell.high {
+            background: #e67e22;
+            color: white;
+        }
+
+        .matrix-cell.extreme {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Risk position markers - matching Bow Tie style exactly */
+        .risk-position {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid white;
+            z-index: 10;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .risk-position.before {
+            background: #2c3e50;
+            color: white;
+            top: 8px;
+            left: 8px;
+        }
+
+        .risk-position.after {
+            background: #8e44ad;
+            color: white;
+            top: 8px;
+            right: 8px;
+        }
+
+        /* OFI Risk Matrix Styles - enhanced to match */
+        .ofi-risk-position {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid white;
+            z-index: 10;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .ofi-risk-position:hover {
+            transform: scale(1.1);
+        }
+
+        .ofi-risk-position.initial {
+            /* Dark background for initial risk - positioned like "BEFORE" */
+            color: white;
+            font-weight: bold;
+            top: 8px;
+            left: 8px;
+        }
+
+        .ofi-risk-position.residual {
+            /* Light background for residual risk - positioned like "AFTER" */
+            background: white;
+            color: #333;
+            font-weight: bold;
+            border: 3px solid #333;
+            top: 8px;
+            right: 8px;
+        }
+
+        .risk-arrow {
+            stroke: #2c3e50;
+            stroke-width: 3px;
+            stroke-dasharray: 8, 4;
+            fill: none;
+            marker-end: url(#movement-arrowhead);
+            z-index: 15;
+        }
+
+        .risk-arrow-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .ofi-movement-arrow {
+            stroke-width: 3px;
+            stroke-dasharray: 8, 4;
+            fill: none;
+            marker-end: url(#ofi-movement-arrowhead);
+            z-index: 15;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .ofi-movement-arrow:hover {
+            opacity: 1;
+            stroke-width: 4px;
+        }
+
+        .matrix-legend {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e6ed;
+        }
+
+        .matrix-legend h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .legend-items {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .legend-marker {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .before-marker {
+            color: #2c3e50;
+        }
+
+        .after-marker {
+            color: #8e44ad;
+        }
+
+        .arrow-marker {
+            color: #2c3e50;
+        }
+
+        /* Matrix cell highlighting */
+        .matrix-cell.current-before {
+            box-shadow: inset 0 0 0 4px #2c3e50;
+        }
+
+        .matrix-cell.current-after {
+            box-shadow: inset 0 0 0 4px #8e44ad;
+        }
+
+        .matrix-cell.has-movement {
+            animation: riskMovement 2s ease-in-out;
+        }
+
+        .matrix-cell.has-ofi-positions {
+            position: relative;
+        }
+
+        @keyframes riskMovement {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .ofi-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .ofi-toggle:hover {
+            background: #e9ecef;
+        }
+
+        .ofi-toggle input[type="checkbox"] {
+            transform: scale(1.1);
+        }
+
+        .ofi-color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* OFI Color Palette */
+        .ofi-color-1 { background: #e74c3c; }
+        .ofi-color-2 { background: #3498db; }
+        .ofi-color-3 { background: #2ecc71; }  
+        .ofi-color-4 { background: #f39c12; }
+        .ofi-color-5 { background: #9b59b6; }
+        .ofi-color-6 { background: #1abc9c; }
+        .ofi-color-7 { background: #e67e22; }
+        .ofi-color-8 { background: #34495e; }
+
+        .ofi-arrow-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9;
+        }
+
+        @media (max-width: 768px) {
+            .visual-risk-matrix {
+                font-size: 10px;
+            }
+            
+            .matrix-cell {
+                height: 50px;
+                width: 60px;
+                font-size: 10px;
+            }
+            
+            .risk-position, .ofi-risk-position {
+                width: 16px;
+                height: 16px;
+                font-size: 12px;
+            }
+            
+            .legend-items {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .ofi-toggle {
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
+            
+            .ofi-color-indicator {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
         .hidden {
             display: none;
         }
@@ -443,6 +815,113 @@
                     <!-- OFIs will be populated here -->
                 </div>
                 <button class="btn btn-primary" onclick="generateOFIs()">Generate OFI Recommendations</button>
+            </div>
+
+            <!-- OFI Risk Matrix Visualization -->
+            <div class="ofi-section hidden" id="ofi-risk-matrix-section">
+                <h2>📊 OFI Risk Matrix Visualization</h2>
+                <p style="margin-bottom: 20px; color: #666;">Visual representation of how each OFI recommendation affects risk positioning</p>
+                
+                <!-- Risk Comparison Table -->
+                <table class="comparison-table" id="ofi-comparison-table" style="margin-bottom: 30px;">
+                    <thead>
+                        <tr>
+                            <th>OFI</th>
+                            <th>Assessment</th>
+                            <th>Likelihood</th>
+                            <th>Impact</th>
+                            <th>Risk Score</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ofi-comparison-tbody">
+                        <!-- OFI comparison rows will be populated here -->
+                    </tbody>
+                </table>
+
+                <!-- OFI Toggle Controls -->
+                <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px;">
+                    <h4 style="margin-bottom: 15px;">Toggle OFI Display:</h4>
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-success" onclick="toggleAllOFIs(true)" style="font-size: 0.9em; padding: 8px 16px;">Show All</button>
+                        <button class="btn btn-secondary" onclick="toggleAllOFIs(false)" style="font-size: 0.9em; padding: 8px 16px;">Hide All</button>
+                        <div id="ofi-toggles" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <!-- Individual OFI toggles will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Matrix -->
+                <div class="risk-matrix-container">
+                    <table class="visual-risk-matrix" id="ofi-risk-matrix">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="matrix-corner">Likelihood Rating</th>
+                                <th colspan="5" class="matrix-header">Consequences - Maximum Reasonable Consequence</th>
+                            </tr>
+                            <tr>
+                                <th class="consequence-header">Insignificant</th>
+                                <th class="consequence-header">Minor</th>
+                                <th class="consequence-header">Moderate</th>
+                                <th class="consequence-header">Major</th>
+                                <th class="consequence-header">Catastrophic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="likelihood-header">Almost Certain</th>
+                                <td class="matrix-cell medium" data-likelihood="5" data-impact="1">Medium</td>
+                                <td class="matrix-cell medium" data-likelihood="5" data-impact="2">Medium</td>
+                                <td class="matrix-cell high" data-likelihood="5" data-impact="3">High</td>
+                                <td class="matrix-cell extreme" data-likelihood="5" data-impact="4">Extreme</td>
+                                <td class="matrix-cell extreme" data-likelihood="5" data-impact="5">Extreme</td>
+                            </tr>
+                            <tr>
+                                <th class="likelihood-header">Likely</th>
+                                <td class="matrix-cell low" data-likelihood="4" data-impact="1">Low</td>
+                                <td class="matrix-cell medium" data-likelihood="4" data-impact="2">Medium</td>
+                                <td class="matrix-cell medium" data-likelihood="4" data-impact="3">Medium</td>
+                                <td class="matrix-cell high" data-likelihood="4" data-impact="4">High</td>
+                                <td class="matrix-cell extreme" data-likelihood="4" data-impact="5">Extreme</td>
+                            </tr>
+                            <tr>
+                                <th class="likelihood-header">Possible</th>
+                                <td class="matrix-cell low" data-likelihood="3" data-impact="1">Low</td>
+                                <td class="matrix-cell low" data-likelihood="3" data-impact="2">Low</td>
+                                <td class="matrix-cell medium" data-likelihood="3" data-impact="3">Medium</td>
+                                <td class="matrix-cell high" data-likelihood="3" data-impact="4">High</td>
+                                <td class="matrix-cell high" data-likelihood="3" data-impact="5">High</td>
+                            </tr>
+                            <tr>
+                                <th class="likelihood-header">Unlikely</th>
+                                <td class="matrix-cell low" data-likelihood="2" data-impact="1">Low</td>
+                                <td class="matrix-cell low" data-likelihood="2" data-impact="2">Low</td>
+                                <td class="matrix-cell low" data-likelihood="2" data-impact="3">Low</td>
+                                <td class="matrix-cell medium" data-likelihood="2" data-impact="4">Medium</td>
+                                <td class="matrix-cell high" data-likelihood="2" data-impact="5">High</td>
+                            </tr>
+                            <tr>
+                                <th class="likelihood-header">Rare</th>
+                                <td class="matrix-cell low" data-likelihood="1" data-impact="1">Low</td>
+                                <td class="matrix-cell low" data-likelihood="1" data-impact="2">Low</td>
+                                <td class="matrix-cell low" data-likelihood="1" data-impact="3">Low</td>
+                                <td class="matrix-cell low" data-likelihood="1" data-impact="4">Low</td>
+                                <td class="matrix-cell medium" data-likelihood="1" data-impact="5">Medium</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Legend -->
+                    <div class="matrix-legend">
+                        <h4>OFI Risk Matrix Legend</h4>
+                        <div class="legend-items" id="ofi-matrix-legend">
+                            <!-- Legend items will be populated dynamically -->
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666; text-align: center;">
+                            Dark circles show initial risk, light circles show residual risk after implementing OFI recommendation
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -982,6 +1461,80 @@
             }).join('');
 
             document.getElementById('ofi-container').innerHTML = ofisHtml;
+            
+            // Show the OFI Risk Matrix section if there are gaps
+            const ofiRiskMatrixSection = document.getElementById('ofi-risk-matrix-section');
+            if (ofiRiskMatrixSection) {
+                ofiRiskMatrixSection.classList.remove('hidden');
+                setupOFIRiskMatrix();
+                updateOFIComparisonTable();
+            }
+        }
+
+        function updateOFIComparisonTable() {
+            const gaps = currentRequirements.filter(req => {
+                const response = assessmentData.responses[req.uuid];
+                return response && response.gap;
+            });
+
+            const tbody = document.getElementById('ofi-comparison-tbody');
+            if (!tbody || gaps.length === 0) return;
+
+            let tableRows = [];
+
+            gaps.forEach((req, index) => {
+                const ofi = assessmentData.ofis[req.uuid];
+                if (!ofi || !ofi.initialRisk || !ofi.residualRisk) return;
+
+                const ofiId = index + 1;
+                const colorClass = `ofi-color-${((index % 8) + 1)}`;
+                const colorStyle = `background: ${getColorFromClass(colorClass)}; width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 8px;`;
+
+                // Before Controls row
+                const initialRiskScore = ofi.initialRisk.likelihood * ofi.initialRisk.impact;
+                const initialRiskLevel = getRiskLevel(initialRiskScore);
+
+                tableRows.push(`
+                    <tr>
+                        <td rowspan="2" style="vertical-align: middle; font-weight: bold;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="${colorStyle}"></div>
+                                OFI-${ofiId}<br>
+                                <small style="color: #666; font-weight: normal;">${req.controlId}</small>
+                            </div>
+                        </td>
+                        <td><strong>Before Controls</strong></td>
+                        <td>${ofi.initialRisk.likelihood}</td>
+                        <td>${ofi.initialRisk.impact}</td>
+                        <td>${initialRiskScore}</td>
+                        <td><span style="padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; ${getRiskLevelStyle(initialRiskScore)}">${initialRiskLevel}</span></td>
+                    </tr>
+                `);
+
+                // After Controls row
+                const residualRiskScore = ofi.residualRisk.likelihood * ofi.residualRisk.impact;
+                const residualRiskLevel = getRiskLevel(residualRiskScore);
+
+                tableRows.push(`
+                    <tr>
+                        <td><strong>After Controls</strong></td>
+                        <td>${ofi.residualRisk.likelihood}</td>
+                        <td>${ofi.residualRisk.impact}</td>
+                        <td>${residualRiskScore}</td>
+                        <td><span style="padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; ${getRiskLevelStyle(residualRiskScore)}">${residualRiskLevel}</span></td>
+                    </tr>
+                `);
+            });
+
+            tbody.innerHTML = tableRows.join('');
+        }
+
+        function getRiskLevelStyle(score) {
+            if (score >= 20) return 'background: #c0392b; color: white;';  // Very High
+            if (score >= 15) return 'background: #e74c3c; color: white;';  // High
+            if (score >= 10) return 'background: #f39c12; color: white;';  // Medium
+            if (score >= 5) return 'background: #f1c40f; color: #333;';    // Low
+            return 'background: #27ae60; color: white;';                   // Very Low
         }
 
         function updateOFI(uuid, path, value) {
@@ -1085,6 +1638,258 @@
             URL.revokeObjectURL(url);
 
             updateStatus('Results exported successfully');
+        }
+
+        // OFI Risk Matrix Functions
+        function setupOFIRiskMatrix() {
+            const gaps = currentRequirements.filter(req => {
+                const response = assessmentData.responses[req.uuid];
+                return response && response.gap;
+            });
+
+            if (gaps.length === 0) return;
+
+            // Create toggle controls for each OFI
+            createOFIToggles(gaps);
+            
+            // Create matrix legend
+            createOFIMatrixLegend(gaps);
+            
+            // Initialize matrix with all OFIs visible
+            updateOFIRiskMatrix();
+        }
+
+        function createOFIToggles(gaps) {
+            const toggleContainer = document.getElementById('ofi-toggles');
+            if (!toggleContainer) return;
+
+            toggleContainer.innerHTML = '';
+
+            gaps.forEach((req, index) => {
+                const ofiId = index + 1;
+                const colorClass = `ofi-color-${((index % 8) + 1)}`;
+                
+                const toggleDiv = document.createElement('div');
+                toggleDiv.className = 'ofi-toggle';
+                
+                toggleDiv.innerHTML = `
+                    <div class="ofi-color-indicator ${colorClass}"></div>
+                    <input type="checkbox" id="ofi-toggle-${req.uuid}" checked onchange="updateOFIRiskMatrix()">
+                    <label for="ofi-toggle-${req.uuid}">OFI-${ofiId}: ${req.controlId}</label>
+                `;
+                
+                toggleContainer.appendChild(toggleDiv);
+            });
+        }
+
+        function createOFIMatrixLegend(gaps) {
+            const legendContainer = document.getElementById('ofi-matrix-legend');
+            if (!legendContainer) return;
+
+            const legendItems = [];
+
+            gaps.forEach((req, index) => {
+                const ofiId = index + 1;
+                const colorClass = `ofi-color-${((index % 8) + 1)}`;
+                
+                legendItems.push(`
+                    <div class="legend-item">
+                        <div class="ofi-color-indicator ${colorClass}"></div>
+                        <span>OFI-${ofiId}: ${req.controlId}</span>
+                    </div>
+                `);
+            });
+
+            legendContainer.innerHTML = legendItems.join('');
+        }
+
+        function updateOFIRiskMatrix() {
+            // Clear existing OFI positions and arrows
+            clearOFIMatrixElements();
+
+            const gaps = currentRequirements.filter(req => {
+                const response = assessmentData.responses[req.uuid];
+                return response && response.gap;
+            });
+
+            if (gaps.length === 0) return;
+
+            // Create SVG container for arrows if it doesn't exist
+            const matrixContainer = document.querySelector('#ofi-risk-matrix-section .risk-matrix-container');
+            if (!matrixContainer) return;
+
+            let arrowSvg = document.getElementById('ofi-arrows-svg');
+            if (!arrowSvg) {
+                arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                arrowSvg.id = 'ofi-arrows-svg';
+                arrowSvg.style.position = 'absolute';
+                arrowSvg.style.top = '0';
+                arrowSvg.style.left = '0';
+                arrowSvg.style.width = '100%';
+                arrowSvg.style.height = '100%';
+                arrowSvg.style.pointerEvents = 'none';
+                arrowSvg.style.zIndex = '9';
+
+                // Create arrowhead marker
+                const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                marker.setAttribute('id', 'ofi-arrowhead');
+                marker.setAttribute('markerWidth', '10');
+                marker.setAttribute('markerHeight', '7');
+                marker.setAttribute('refX', '9');
+                marker.setAttribute('refY', '3.5');
+                marker.setAttribute('orient', 'auto');
+                marker.setAttribute('markerUnits', 'strokeWidth');
+
+                const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                arrowPath.setAttribute('d', 'M 0 0 L 10 3.5 L 0 7 Z');
+                arrowPath.setAttribute('fill', '#2c3e50');
+
+                marker.appendChild(arrowPath);
+                defs.appendChild(marker);
+                arrowSvg.appendChild(defs);
+
+                matrixContainer.style.position = 'relative';
+                matrixContainer.appendChild(arrowSvg);
+            }
+
+            // Add OFI positions for visible OFIs
+            gaps.forEach((req, index) => {
+                const toggle = document.getElementById(`ofi-toggle-${req.uuid}`);
+                if (!toggle || !toggle.checked) return;
+
+                const ofi = assessmentData.ofis[req.uuid];
+                if (!ofi || !ofi.initialRisk || !ofi.residualRisk) return;
+
+                const ofiId = index + 1;
+                const colorClass = `ofi-color-${((index % 8) + 1)}`;
+                
+                addOFIRiskPosition(ofi.initialRisk.likelihood, ofi.initialRisk.impact, ofiId, colorClass, 'initial', req.controlId);
+                addOFIRiskPosition(ofi.residualRisk.likelihood, ofi.residualRisk.impact, ofiId, colorClass, 'residual', req.controlId);
+                
+                // Add movement arrow if positions are different
+                if (ofi.initialRisk.likelihood !== ofi.residualRisk.likelihood || 
+                    ofi.initialRisk.impact !== ofi.residualRisk.impact) {
+                    addOFIMovementArrow(ofi.initialRisk, ofi.residualRisk, colorClass, ofiId);
+                }
+            });
+        }
+
+        function clearOFIMatrixElements() {
+            // Remove existing OFI positions
+            document.querySelectorAll('.ofi-risk-position').forEach(el => el.remove());
+            
+            // Clear existing arrows
+            const arrowSvg = document.getElementById('ofi-arrows-svg');
+            if (arrowSvg) {
+                const existingArrows = arrowSvg.querySelectorAll('.ofi-movement-arrow');
+                existingArrows.forEach(arrow => arrow.remove());
+            }
+
+            // Remove position markers from cells
+            document.querySelectorAll('#ofi-risk-matrix .matrix-cell').forEach(cell => {
+                cell.classList.remove('has-ofi-positions');
+            });
+        }
+
+        function addOFIRiskPosition(likelihood, impact, ofiId, colorClass, type, controlId) {
+            const cell = document.querySelector(
+                `#ofi-risk-matrix .matrix-cell[data-likelihood="${likelihood}"][data-impact="${impact}"]`
+            );
+            
+            if (!cell) return;
+
+            cell.classList.add('has-ofi-positions');
+
+            const marker = document.createElement('div');
+            marker.className = `ofi-risk-position ${type}`;
+            marker.textContent = ofiId;
+            marker.title = `OFI-${ofiId} (${controlId}) - ${type === 'initial' ? 'Initial' : 'Residual'} Risk\nLikelihood: ${likelihood}, Impact: ${impact}`;
+            
+            // Set color based on type - matching Bow Tie positioning
+            if (type === 'initial') {
+                marker.classList.add(colorClass);
+                // Position like "BEFORE" - top left
+                marker.style.top = '8px';
+                marker.style.left = '8px';
+            } else {
+                // Position like "AFTER" - top right
+                marker.style.background = 'white';
+                marker.style.color = getColorFromClass(colorClass);
+                marker.style.borderColor = getColorFromClass(colorClass);
+                marker.style.top = '8px';
+                marker.style.right = '8px';
+            }
+
+            cell.appendChild(marker);
+        }
+
+        function addOFIMovementArrow(initialRisk, residualRisk, colorClass, ofiId) {
+            const initialCell = document.querySelector(
+                `#ofi-risk-matrix .matrix-cell[data-likelihood="${initialRisk.likelihood}"][data-impact="${initialRisk.impact}"]`
+            );
+            const residualCell = document.querySelector(
+                `#ofi-risk-matrix .matrix-cell[data-likelihood="${residualRisk.likelihood}"][data-impact="${residualRisk.impact}"]`
+            );
+
+            if (!initialCell || !residualCell || initialCell === residualCell) return;
+
+            const matrixContainer = document.querySelector('#ofi-risk-matrix-section .risk-matrix-container');
+            const arrowSvg = document.getElementById('ofi-arrows-svg');
+            
+            if (!matrixContainer || !arrowSvg) return;
+
+            // Get positions relative to container
+            const containerRect = matrixContainer.getBoundingClientRect();
+            const initialRect = initialCell.getBoundingClientRect();
+            const residualRect = residualCell.getBoundingClientRect();
+
+            const initialX = initialRect.left - containerRect.left + initialRect.width / 2;
+            const initialY = initialRect.top - containerRect.top + initialRect.height / 2;
+            const residualX = residualRect.left - containerRect.left + residualRect.width / 2;
+            const residualY = residualRect.top - containerRect.top + residualRect.height / 2;
+
+            // Create the arrow line
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', initialX);
+            line.setAttribute('y1', initialY);
+            line.setAttribute('x2', residualX);
+            line.setAttribute('y2', residualY);
+            line.setAttribute('class', 'ofi-movement-arrow');
+            line.setAttribute('stroke', getColorFromClass(colorClass));
+            line.setAttribute('stroke-width', '3');
+            line.setAttribute('stroke-dasharray', '8,4');
+            line.setAttribute('marker-end', 'url(#ofi-movement-arrowhead)');
+            line.setAttribute('opacity', '0.8');
+
+            // Add tooltip
+            const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+            title.textContent = `OFI-${ofiId} Risk Movement: ${getRiskLevel(initialRisk.likelihood * initialRisk.impact)} → ${getRiskLevel(residualRisk.likelihood * residualRisk.impact)}`;
+            line.appendChild(title);
+
+            arrowSvg.appendChild(line);
+        }
+
+        function getColorFromClass(colorClass) {
+            const colorMap = {
+                'ofi-color-1': '#e74c3c',
+                'ofi-color-2': '#3498db', 
+                'ofi-color-3': '#2ecc71',
+                'ofi-color-4': '#f39c12',
+                'ofi-color-5': '#9b59b6',
+                'ofi-color-6': '#1abc9c',
+                'ofi-color-7': '#e67e22',
+                'ofi-color-8': '#34495e'
+            };
+            return colorMap[colorClass] || '#34495e';
+        }
+
+        function toggleAllOFIs(show) {
+            const checkboxes = document.querySelectorAll('[id^="ofi-toggle-"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = show;
+            });
+            updateOFIRiskMatrix();
         }
 
         // Initialize the application when the page loads
