@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSCAL Requirements Gap Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+
+        .controls-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .control-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .control-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .control-id {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .control-status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e74c3c;
+        }
+
+        .status-indicator.satisfied {
+            background: #27ae60;
+        }
+
+        .control-description {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .control-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .response-area {
+            margin-top: 15px;
+        }
+
+        .response-area textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .response-area textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .results-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 500;
+        }
+
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .gap-indicator {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .gap-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .gap-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .file-input-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .file-input-label:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 600px;
+        }
+
+        .risk-cell {
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .risk-header {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .risk-low { background: #27ae60; color: white; }
+        .risk-medium { background: #f39c12; color: white; }
+        .risk-high { background: #e74c3c; color: white; }
+
+        .ofi-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .ofi-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cia-ratings {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .cia-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cia-rating label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cia-rating select {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OSCAL Requirements Gap Analysis Tool</h1>
+            <p>Assess compliance gaps against security control requirements</p>
+        </div>
+
+        <div class="main-content">
+            <!-- File Loading Section -->
+            <div class="section">
+                <h2>Load Requirements</h2>
+                <div class="file-input-section">
+                    <div class="file-input">
+                        <input type="file" id="oscal-file" accept=".json" />
+                        <label for="oscal-file" class="file-input-label">Load OSCAL JSON File</label>
+                    </div>
+                    <div class="file-input">
+                        <input type="file" id="assessment-file" accept=".json" />
+                        <label for="assessment-file" class="file-input-label">Resume Assessment</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="loadDefaultRequirements()">Load PCI DSS 4.0 Sample</button>
+                    <button class="btn btn-secondary" onclick="exportResults()">Export Results</button>
+                </div>
+                <div id="load-status" style="margin-top: 15px; color: #666;"></div>
+            </div>
+
+            <!-- Requirements Overview -->
+            <div class="section">
+                <h2>Requirements Overview</h2>
+                <div class="stats-overview" id="stats-overview">
+                    <!-- Stats will be populated here -->
+                </div>
+                <div id="requirements-filter" style="margin-top: 20px;">
+                    <label for="family-filter" style="margin-right: 10px;">Filter by Family:</label>
+                    <select id="family-filter" onchange="filterRequirements()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">All Families</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Requirements Assessment -->
+            <div class="section">
+                <h2>Requirements Assessment</h2>
+                <div class="controls-grid" id="controls-grid">
+                    <!-- Controls will be populated here -->
+                </div>
+            </div>
+
+            <!-- Results Analysis -->
+            <div class="section">
+                <h2>Gap Analysis Results</h2>
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Control ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Response</th>
+                            <th>Gap</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- OFI Recommendations -->
+            <div class="ofi-section" id="ofi-section">
+                <h2>Opportunities for Improvement (OFIs)</h2>
+                <div id="ofi-container">
+                    <!-- OFIs will be populated here -->
+                </div>
+                <button class="btn btn-primary" onclick="generateOFIs()">Generate OFI Recommendations</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentRequirements = [];
+        let assessmentData = {
+            requirements: [],
+            responses: {},
+            ofis: {}
+        };
+
+        // Default PCI DSS data
+        const defaultPCIData = {
+            "catalog": {
+                "securityControls": [
+                    {
+                        "uuid": "24f3f4e9-b01c-414c-9530-8f022fcbe956",
+                        "title": "5.2.1 Anti-malware Solution Deployment",
+                        "description": "An anti-malware solution(s) is deployed on all system components, except for those system components identified in periodic evaluations per Requirement 5.2.3 that concludes the system components are not at risk from malware.",
+                        "controlId": "5.2.1",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.2.1.a Examine system components to verify that an anti-malware solution(s) is deployed on all system components, except for those determined to not be at risk from malware based on periodic evaluations per Requirement 5.2.3."
+                    },
+                    {
+                        "uuid": "21a340a7-1f9b-40e3-b258-0f54d83c892d",
+                        "title": "5.2.2 Anti-malware Capabilities",
+                        "description": "The deployed anti-malware solution(s): Detects all known types of malware. Removes, blocks, or contains all known types of malware.",
+                        "controlId": "5.2.2",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.2.2 Examine vendor documentation and configurations of the anti-malware solution(s) to verify that the solution detects and removes/blocks/contains all known types of malware."
+                    },
+                    {
+                        "uuid": "c6a73e6a-75ab-4626-97b7-5c5b6de09c3b",
+                        "title": "5.2.3 Periodic Evaluations",
+                        "description": "Any system components that are not at risk for malware are evaluated periodically to include: A documented list of all system components not at risk for malware. Identification and evaluation of evolving malware threats for those system components. Confirmation whether such system components continue to not require anti-malware protection.",
+                        "controlId": "5.2.3",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.2.3.a Examine documented policies and procedures to verify that a process is defined for periodic evaluations of any system components that are not at risk for malware."
+                    },
+                    {
+                        "uuid": "9a58bf0c-8232-40f3-b38c-38b3bcc7904e",
+                        "title": "5.2.3.1 Risk-Based Evaluation Frequency",
+                        "description": "The frequency of periodic evaluations of system components identified as not at risk for malware is defined in the entity's targeted risk analysis, which is performed according to all elements specified in Requirement 12.3.1.",
+                        "controlId": "5.2.3.1",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.2.3.1.a Examine the entity's targeted risk analysis for the frequency of periodic evaluations of system components identified as not at risk for malware."
+                    },
+                    {
+                        "uuid": "df0d85d5-be3d-4ddd-8077-05e308e3f184",
+                        "title": "5.3.1 Automatic Updates",
+                        "description": "The anti-malware solution(s) is kept current via automatic updates.",
+                        "controlId": "5.3.1",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.3.1.a Examine anti-malware solution(s) configurations, including any master installation of the software, to verify the solution is configured to perform automatic updates."
+                    },
+                    {
+                        "uuid": "c1330b77-17ec-46a9-b0b1-eb0e1b0c7584",
+                        "title": "5.3.2 Scanning Configuration",
+                        "description": "The anti-malware solution(s): Performs periodic scans and active or real-time scans, OR Performs continuous behavioral analysis of systems or processes.",
+                        "controlId": "5.3.2",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.3.2.a Examine anti-malware solution(s) configurations to verify the solution(s) is configured to perform at least one of the specified scanning methods."
+                    },
+                    {
+                        "uuid": "f81d9a6d-7f44-444e-af32-82d3ccabf9f7",
+                        "title": "5.3.2.1 Scan Frequency",
+                        "description": "If periodic malware scans are performed to meet Requirement 5.3.2, the frequency of scans is defined in the entity's targeted risk analysis, which is performed according to all elements specified in Requirement 12.3.1.",
+                        "controlId": "5.3.2.1",
+                        "family": "Protect All Systems and Networks from Malicious Software",  
+                        "assessmentPlan": "5.3.2.1.a Examine the entity's targeted risk analysis for the frequency of periodic malware scans."
+                    },
+                    {
+                        "uuid": "dcbe1aa4-3985-43ef-9833-8edfe4bc70f1",
+                        "title": "5.3.3 Removable Media Scanning",
+                        "description": "For removable electronic media, the anti-malware solution(s): Performs automatic scans when the media is inserted, connected, or logically mounted, OR Performs continuous behavioral analysis of systems or processes when the media is inserted, connected, or logically mounted.",
+                        "controlId": "5.3.3",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.3.3.a Examine anti-malware solution(s) configurations to verify that, for removable electronic media, the solution is configured to perform appropriate scanning."
+                    },
+                    {
+                        "uuid": "9f9416e6-8e3a-4cbb-ad7f-fbf165eeb45d",
+                        "title": "5.3.4 Audit Logging",
+                        "description": "Audit logs for the anti-malware solution(s) are enabled and retained in accordance with Requirement 10.5.1.",
+                        "controlId": "5.3.4",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.3.4 Examine anti-malware solution(s) configurations to verify logs are enabled and retained in accordance with Requirement 10.5.1."
+                    },
+                    {
+                        "uuid": "f93a493f-cbae-4772-addf-bd01e20d9a61",
+                        "title": "5.3.5 Protection from Alteration",
+                        "description": "Anti-malware mechanisms cannot be disabled or altered by users, unless specifically documented, and authorized by management on a case-by-case basis for a limited time period.",
+                        "controlId": "5.3.5",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.3.5.a Examine anti-malware configurations to verify that the anti-malware mechanisms cannot be disabled or altered by users."
+                    },
+                    {
+                        "uuid": "5a73521b-9523-4133-b0f0-0392cb5f115f",
+                        "title": "5.4.1 Phishing Protection",
+                        "description": "Processes and automated mechanisms are in place to detect and protect personnel against phishing attacks.",
+                        "controlId": "5.4.1",
+                        "family": "Protect All Systems and Networks from Malicious Software",
+                        "assessmentPlan": "5.4.1 Observe implemented processes and examine mechanisms to verify controls are in place to detect and protect personnel against phishing attacks."
+                    }
+                ]
+            }
+        };
+
+        // Risk matrix configuration
+        const riskMatrix = {
+            likelihood: [
+                { value: 5, label: "Almost Certain" },
+                { value: 4, label: "Likely" },
+                { value: 3, label: "Possible" },
+                { value: 2, label: "Unlikely" },
+                { value: 1, label: "Rare" }
+            ],
+            impact: [
+                { value: 5, label: "Extreme" },
+                { value: 4, label: "Major" },
+                { value: 3, label: "Moderate" },
+                { value: 2, label: "Minor" },
+                { value: 1, label: "Insignificant" }
+            ]
+        };
+
+        // Initialize the application
+        function init() {
+            setupEventListeners();
+            loadDefaultRequirements();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('oscal-file').addEventListener('change', handleOSCALFileLoad);
+            document.getElementById('assessment-file').addEventListener('change', handleAssessmentFileLoad);
+        }
+
+        function loadDefaultRequirements() {
+            try {
+                currentRequirements = defaultPCIData.catalog.securityControls;
+                assessmentData.requirements = currentRequirements;
+                
+                // Initialize responses
+                currentRequirements.forEach(req => {
+                    if (!assessmentData.responses[req.uuid]) {
+                        assessmentData.responses[req.uuid] = {
+                            satisfied: false,
+                            response: '',
+                            gap: true
+                        };
+                    }
+                });
+
+                updateStatsOverview();
+                populateFamilyFilter();
+                renderRequirements();
+                updateResultsTable();
+                updateStatus('PCI DSS 4.0 Section 5 requirements loaded successfully');
+            } catch (error) {
+                updateStatus('Error loading default requirements: ' + error.message, 'error');
+            }
+        }
+
+        function handleOSCALFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.catalog && data.catalog.securityControls) {
+                        currentRequirements = data.catalog.securityControls;
+                        assessmentData.requirements = currentRequirements;
+                        
+                        // Initialize responses
+                        currentRequirements.forEach(req => {
+                            if (!assessmentData.responses[req.uuid]) {
+                                assessmentData.responses[req.uuid] = {
+                                    satisfied: false,
+                                    response: '',
+                                    gap: true
+                                };
+                            }
+                        });
+
+                        updateStatsOverview();
+                        populateFamilyFilter();
+                        renderRequirements();
+                        updateResultsTable();
+                        updateStatus(`${currentRequirements.length} requirements loaded successfully`);
+                    } else {
+                        throw new Error('Invalid OSCAL format');
+                    }
+                } catch (error) {
+                    updateStatus('Error loading OSCAL file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function handleAssessmentFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.requirements && data.responses) {
+                        assessmentData = data;
+                        currentRequirements = data.requirements;
+                        
+                        updateStatsOverview();
+                        populateFamilyFilter();
+                        renderRequirements();
+                        updateResultsTable();
+                        updateStatus('Assessment resumed successfully');
+                    } else {
+                        throw new Error('Invalid assessment file format');
+                    }
+                } catch (error) {
+                    updateStatus('Error loading assessment file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('load-status');
+            statusDiv.textContent = message;
+            statusDiv.style.color = type === 'error' ? '#e74c3c' : '#27ae60';
+        }
+
+        function updateStatsOverview() {
+            const total = currentRequirements.length;
+            const satisfied = Object.values(assessmentData.responses).filter(r => r.satisfied).length;
+            const gaps = total - satisfied;
+            const coverage = total > 0 ? Math.round((satisfied / total) * 100) : 0;
+
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-number">${total}</div>
+                    <div class="stat-label">Total Requirements</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${satisfied}</div>
+                    <div class="stat-label">Satisfied</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${gaps}</div>
+                    <div class="stat-label">Gaps Identified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${coverage}%</div>
+                    <div class="stat-label">Coverage</div>
+                </div>
+            `;
+            
+            document.getElementById('stats-overview').innerHTML = statsHtml;
+        }
+
+        function populateFamilyFilter() {
+            const families = [...new Set(currentRequirements.map(req => req.family))];
+            const select = document.getElementById('family-filter');
+            
+            select.innerHTML = '<option value="">All Families</option>';
+            families.forEach(family => {
+                const option = document.createElement('option');
+                option.value = family;
+                option.textContent = family;
+                select.appendChild(option);
+            });
+        }
+
+        function filterRequirements() {
+            const selectedFamily = document.getElementById('family-filter').value;
+            renderRequirements(selectedFamily);
+        }
+
+        function renderRequirements(familyFilter = '') {
+            const filteredRequirements = familyFilter 
+                ? currentRequirements.filter(req => req.family === familyFilter)
+                : currentRequirements;
+
+            const gridHtml = filteredRequirements.map(req => {
+                const response = assessmentData.responses[req.uuid] || { satisfied: false, response: '', gap: true };
+                const statusClass = response.satisfied ? 'satisfied' : '';
+                
+                return `
+                    <div class="control-card">
+                        <div class="control-header">
+                            <div class="control-id">${req.controlId}</div>
+                            <div class="control-status">
+                                <div class="status-indicator ${statusClass}"></div>
+                                <span>${response.satisfied ? 'Satisfied' : 'Gap'}</span>
+                            </div>
+                        </div>
+                        <h3 style="margin-bottom: 10px; color: #2c3e50;">${req.title}</h3>
+                        <div class="control-description">${req.description}</div>
+                        <div class="control-actions">
+                            <button class="btn ${response.satisfied ? 'btn-success' : 'btn-secondary'}" 
+                                    onclick="toggleSatisfaction('${req.uuid}', true)">
+                                Mark Satisfied
+                            </button>
+                            <button class="btn ${!response.satisfied ? 'btn-danger' : 'btn-secondary'}" 
+                                    onclick="toggleSatisfaction('${req.uuid}', false)">
+                                Mark Gap
+                            </button>
+                        </div>
+                        <div class="response-area">
+                            <textarea placeholder="Describe how this requirement is satisfied or explain the gap..." 
+                                      onchange="updateResponse('${req.uuid}', this.value)">${response.response}</textarea>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('controls-grid').innerHTML = gridHtml;
+        }
+
+        function toggleSatisfaction(uuid, satisfied) {
+            if (!assessmentData.responses[uuid]) {
+                assessmentData.responses[uuid] = { satisfied: false, response: '', gap: true };
+            }
+            
+            assessmentData.responses[uuid].satisfied = satisfied;
+            assessmentData.responses[uuid].gap = !satisfied;
+            
+            updateStatsOverview();
+            renderRequirements(document.getElementById('family-filter').value);
+            updateResultsTable();
+        }
+
+        function updateResponse(uuid, response) {
+            if (!assessmentData.responses[uuid]) {
+                assessmentData.responses[uuid] = { satisfied: false, response: '', gap: true };
+            }
+            
+            assessmentData.responses[uuid].response = response;
+        }
+
+        function updateResultsTable() {
+            const tbody = document.getElementById('results-tbody');
+            
+            const rowsHtml = currentRequirements.map(req => {
+                const response = assessmentData.responses[req.uuid] || { satisfied: false, response: '', gap: true };
+                const gapClass = response.gap ? 'gap-no' : 'gap-yes';
+                const gapText = response.gap ? 'Gap' : 'Covered';
+                
+                return `
+                    <tr>
+                        <td><strong>${req.controlId}</strong></td>
+                        <td>${req.title}</td>
+                        <td><span class="gap-indicator ${gapClass}">${gapText}</span></td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${response.response || 'No response provided'}</td>
+                        <td>${response.gap ? 'Requires attention' : 'Adequately controlled'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = rowsHtml;
+        }
+
+        function generateOFIs() {
+            const gaps = currentRequirements.filter(req => {
+                const response = assessmentData.responses[req.uuid];
+                return response && response.gap;
+            });
+
+            if (gaps.length === 0) {
+                document.getElementById('ofi-container').innerHTML = '<p style="color: #27ae60; font-weight: bold;">No gaps identified - all requirements are satisfied!</p>';
+                return;
+            }
+
+            const ofisHtml = gaps.map(req => {
+                const response = assessmentData.responses[req.uuid];
+                const ofi = assessmentData.ofis[req.uuid] || {
+                    recommendation: '',
+                    initialRisk: { 
+                        likelihood: 3, 
+                        impact: 3,
+                        impactDescription: '',
+                        likelihoodDescription: ''
+                    },
+                    residualRisk: { 
+                        likelihood: 2, 
+                        impact: 2,
+                        impactDescription: '',
+                        likelihoodDescription: ''
+                    },
+                    ciaRatings: { confidentiality: 3, integrity: 3, availability: 3 },
+                    assetClass: ''
+                };
+
+                const initialRiskScore = calculateRiskScore(ofi.initialRisk.likelihood, ofi.initialRisk.impact);
+                const residualRiskScore = calculateRiskScore(ofi.residualRisk.likelihood, ofi.residualRisk.impact);
+
+                return `
+                    <div class="ofi-card">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">OFI for ${req.controlId}: ${req.title}</h4>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>Gap Description:</strong>
+                            <p style="margin: 5px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">${response.response || 'No specific gap description provided'}</p>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label><strong>Recommendation:</strong></label>
+                            <textarea placeholder="Describe the recommended action to address this gap..." 
+                                      style="width: 100%; min-height: 80px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
+                                      onchange="updateOFI('${req.uuid}', 'recommendation', this.value)">${ofi.recommendation}</textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                            <div>
+                                <h5>Initial Risk (Before Treatment)</h5>
+                                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                                    <div>
+                                        <label>Impact:</label>
+                                        <select onchange="updateOFI('${req.uuid}', 'initialRisk.impact', parseInt(this.value)); updateRiskScores('${req.uuid}')">
+                                            ${riskMatrix.impact.map(i => 
+                                                `<option value="${i.value}" ${ofi.initialRisk.impact === i.value ? 'selected' : ''}>${i.value} - ${i.label}</option>`
+                                            ).join('')}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>Likelihood:</label>
+                                        <select onchange="updateOFI('${req.uuid}', 'initialRisk.likelihood', parseInt(this.value)); updateRiskScores('${req.uuid}')">
+                                            ${riskMatrix.likelihood.map(l => 
+                                                `<option value="${l.value}" ${ofi.initialRisk.likelihood === l.value ? 'selected' : ''}>${l.value} - ${l.label}</option>`
+                                            ).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label><strong>Impact Description:</strong></label>
+                                    <textarea placeholder="Describe the potential business impact if this risk materializes..." 
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              onchange="updateOFI('${req.uuid}', 'initialRisk.impactDescription', this.value)">${ofi.initialRisk.impactDescription || ''}</textarea>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label><strong>Likelihood Description:</strong></label>
+                                    <textarea placeholder="Explain why this likelihood rating was selected..." 
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              onchange="updateOFI('${req.uuid}', 'initialRisk.likelihoodDescription', this.value)">${ofi.initialRisk.likelihoodDescription || ''}</textarea>
+                                </div>
+                                <div class="risk-score ${getRiskClass(initialRiskScore)}" id="initial-risk-${req.uuid}" style="padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;">
+                                    Risk Score: ${initialRiskScore} (${getRiskLevel(initialRiskScore)})
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5>Residual Risk (After Treatment)</h5>
+                                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                                    <div>
+                                        <label>Impact:</label>
+                                        <select onchange="updateOFI('${req.uuid}', 'residualRisk.impact', parseInt(this.value)); updateRiskScores('${req.uuid}')">
+                                            ${riskMatrix.impact.map(i => 
+                                                `<option value="${i.value}" ${ofi.residualRisk.impact === i.value ? 'selected' : ''}>${i.value} - ${i.label}</option>`
+                                            ).join('')}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>Likelihood:</label>
+                                        <select onchange="updateOFI('${req.uuid}', 'residualRisk.likelihood', parseInt(this.value)); updateRiskScores('${req.uuid}')">
+                                            ${riskMatrix.likelihood.map(l => 
+                                                `<option value="${l.value}" ${ofi.residualRisk.likelihood === l.value ? 'selected' : ''}>${l.value} - ${l.label}</option>`
+                                            ).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label><strong>Residual Impact Description:</strong></label>
+                                    <textarea placeholder="Describe the reduced impact after implementing the recommendation..." 
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              onchange="updateOFI('${req.uuid}', 'residualRisk.impactDescription', this.value)">${ofi.residualRisk.impactDescription || ''}</textarea>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label><strong>Residual Likelihood Description:</strong></label>
+                                    <textarea placeholder="Explain how the recommendation reduces the likelihood..." 
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              onchange="updateOFI('${req.uuid}', 'residualRisk.likelihoodDescription', this.value)">${ofi.residualRisk.likelihoodDescription || ''}</textarea>
+                                </div>
+                                <div class="risk-score ${getRiskClass(residualRiskScore)}" id="residual-risk-${req.uuid}" style="padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;">
+                                    Risk Score: ${residualRiskScore} (${getRiskLevel(residualRiskScore)})
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <h5>CIA Impact Ratings (1-5 scale)</h5>
+                            <div class="cia-ratings">
+                                <div class="cia-rating">
+                                    <label>Confidentiality</label>
+                                    <select onchange="updateOFI('${req.uuid}', 'ciaRatings.confidentiality', parseInt(this.value))">
+                                        <option value="1" ${ofi.ciaRatings.confidentiality === 1 ? 'selected' : ''}>1 - Very Low</option>
+                                        <option value="2" ${ofi.ciaRatings.confidentiality === 2 ? 'selected' : ''}>2 - Low</option>
+                                        <option value="3" ${ofi.ciaRatings.confidentiality === 3 ? 'selected' : ''}>3 - Medium</option>
+                                        <option value="4" ${ofi.ciaRatings.confidentiality === 4 ? 'selected' : ''}>4 - High</option>
+                                        <option value="5" ${ofi.ciaRatings.confidentiality === 5 ? 'selected' : ''}>5 - Very High</option>
+                                    </select>
+                                </div>
+                                <div class="cia-rating">
+                                    <label>Integrity</label>
+                                    <select onchange="updateOFI('${req.uuid}', 'ciaRatings.integrity', parseInt(this.value))">
+                                        <option value="1" ${ofi.ciaRatings.integrity === 1 ? 'selected' : ''}>1 - Very Low</option>
+                                        <option value="2" ${ofi.ciaRatings.integrity === 2 ? 'selected' : ''}>2 - Low</option>
+                                        <option value="3" ${ofi.ciaRatings.integrity === 3 ? 'selected' : ''}>3 - Medium</option>
+                                        <option value="4" ${ofi.ciaRatings.integrity === 4 ? 'selected' : ''}>4 - High</option>
+                                        <option value="5" ${ofi.ciaRatings.integrity === 5 ? 'selected' : ''}>5 - Very High</option>
+                                    </select>
+                                </div>
+                                <div class="cia-rating">
+                                    <label>Availability</label>
+                                    <select onchange="updateOFI('${req.uuid}', 'ciaRatings.availability', parseInt(this.value))">
+                                        <option value="1" ${ofi.ciaRatings.availability === 1 ? 'selected' : ''}>1 - Very Low</option>
+                                        <option value="2" ${ofi.ciaRatings.availability === 2 ? 'selected' : ''}>2 - Low</option>
+                                        <option value="3" ${ofi.ciaRatings.availability === 3 ? 'selected' : ''}>3 - Medium</option>
+                                        <option value="4" ${ofi.ciaRatings.availability === 4 ? 'selected' : ''}>4 - High</option>
+                                        <option value="5" ${ofi.ciaRatings.availability === 5 ? 'selected' : ''}>5 - Very High</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label><strong>Asset Class/Environment:</strong></label>
+                            <input type="text" placeholder="e.g., Critical production systems, Development environment, etc." 
+                                   style="width: 100%; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                                   value="${ofi.assetClass}" 
+                                   onchange="updateOFI('${req.uuid}', 'assetClass', this.value)">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('ofi-container').innerHTML = ofisHtml;
+        }
+
+        function updateOFI(uuid, path, value) {
+            if (!assessmentData.ofis[uuid]) {
+                assessmentData.ofis[uuid] = {
+                    recommendation: '',
+                    initialRisk: { 
+                        likelihood: 3, 
+                        impact: 3,
+                        impactDescription: '',
+                        likelihoodDescription: ''
+                    },
+                    residualRisk: { 
+                        likelihood: 2, 
+                        impact: 2,
+                        impactDescription: '',
+                        likelihoodDescription: ''
+                    },
+                    ciaRatings: { confidentiality: 3, integrity: 3, availability: 3 },
+                    assetClass: ''
+                };
+            }
+
+            // Handle nested object paths
+            const pathParts = path.split('.');
+            let obj = assessmentData.ofis[uuid];
+            
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                if (!obj[pathParts[i]]) {
+                    obj[pathParts[i]] = {};
+                }
+                obj = obj[pathParts[i]];
+            }
+            
+            obj[pathParts[pathParts.length - 1]] = value;
+        }
+
+        function calculateRiskScore(likelihood, impact) {
+            return likelihood * impact;
+        }
+
+        function getRiskLevel(score) {
+            if (score >= 15) return 'High';
+            if (score >= 6) return 'Medium';
+            return 'Low';
+        }
+
+        function getRiskClass(score) {
+            if (score >= 15) return 'risk-high';
+            if (score >= 6) return 'risk-medium';
+            return 'risk-low';
+        }
+
+        function updateRiskScores(uuid) {
+            const ofi = assessmentData.ofis[uuid];
+            if (!ofi) return;
+
+            // Calculate new risk scores
+            const initialRiskScore = calculateRiskScore(ofi.initialRisk.likelihood, ofi.initialRisk.impact);
+            const residualRiskScore = calculateRiskScore(ofi.residualRisk.likelihood, ofi.residualRisk.impact);
+
+            // Update initial risk display
+            const initialRiskElement = document.getElementById(`initial-risk-${uuid}`);
+            if (initialRiskElement) {
+                initialRiskElement.className = `risk-score ${getRiskClass(initialRiskScore)}`;
+                initialRiskElement.style.cssText = 'padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;';
+                initialRiskElement.textContent = `Risk Score: ${initialRiskScore} (${getRiskLevel(initialRiskScore)})`;
+            }
+
+            // Update residual risk display
+            const residualRiskElement = document.getElementById(`residual-risk-${uuid}`);
+            if (residualRiskElement) {
+                residualRiskElement.className = `risk-score ${getRiskClass(residualRiskScore)}`;
+                residualRiskElement.style.cssText = 'padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;';
+                residualRiskElement.textContent = `Risk Score: ${residualRiskScore} (${getRiskLevel(residualRiskScore)})`;
+            }
+        }
+
+        function exportResults() {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                requirements: currentRequirements,
+                responses: assessmentData.responses,
+                ofis: assessmentData.ofis,
+                summary: {
+                    totalRequirements: currentRequirements.length,
+                    satisfiedRequirements: Object.values(assessmentData.responses).filter(r => r.satisfied).length,
+                    gapsIdentified: Object.values(assessmentData.responses).filter(r => r.gap).length,
+                    coveragePercentage: Math.round((Object.values(assessmentData.responses).filter(r => r.satisfied).length / currentRequirements.length) * 100)
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gap-analysis-results-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            updateStatus('Results exported successfully');
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
