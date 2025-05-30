@@ -12,13 +12,14 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        body {
             font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
             font-weight: 500;
             font-style: normal;
+            
+        }
+
+        body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -79,9 +80,10 @@
         .control-card {
             background: white;
             border-radius: 8px;
-            padding: 20px;
+            padding: 0;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .control-card:hover {
@@ -89,11 +91,62 @@
             box-shadow: 0 8px 15px rgba(0,0,0,0.15);
         }
 
+        .control-card.collapsed {
+            opacity: 0.8;
+        }
+
         .control-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            padding: 20px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e0e6ed;
+            transition: background 0.3s ease;
+        }
+
+        .control-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+
+        .control-header.satisfied {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-bottom-color: #c3e6cb;
+        }
+
+        .control-header.satisfied:hover {
+            background: linear-gradient(135deg, #c3e6cb 0%, #b8dabd 100%);
+        }
+
+        .control-content {
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .control-content.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+            overflow: hidden;
+        }
+
+        .control-title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .accordion-icon {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+
+        .accordion-icon.collapsed {
+            transform: rotate(-90deg);
         }
 
         .control-id {
@@ -303,9 +356,9 @@
             color: white;
         }
 
-        .risk-low { background: #27ae60; color: white; }
-        .risk-medium { background: #f39c12; color: white; }
-        .risk-high { background: #e74c3c; color: white; }
+        .risk-low { background: #27ae60; color: white; text-transform: uppercase;}
+        .risk-medium { background: #f39c12; color: white; text-transform: uppercase;}
+        .risk-high { background: #e74c3c; color: white; text-transform: uppercase;}
 
         .ofi-section {
             margin-top: 30px;
@@ -747,6 +800,19 @@
             color: #666;
             margin-top: 5px;
         }
+
+        /* Accordion Control Buttons */
+        .accordion-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .accordion-controls .btn {
+            font-size: 0.9em;
+            padding: 8px 16px;
+        }
     </style>
 </head>
 <body>
@@ -792,6 +858,11 @@
             <!-- Requirements Assessment -->
             <div class="section">
                 <h2>Requirements Assessment</h2>
+                <div class="accordion-controls">
+                    <button class="btn btn-primary" onclick="expandAllRequirements()">Expand All</button>
+                    <button class="btn btn-secondary" onclick="collapseAllRequirements()">Collapse All</button>
+                    <button class="btn btn-success" onclick="collapseSatisfiedRequirements()">Collapse Satisfied</button>
+                </div>
                 <div class="controls-grid" id="controls-grid">
                     <!-- Controls will be populated here -->
                 </div>
@@ -822,7 +893,8 @@
                 <div id="ofi-container">
                     <!-- OFIs will be populated here -->
                 </div>
-                <button class="btn btn-primary" onclick="generateOFIs()">Generate OFI Recommendations</button>
+                <br/>
+                <button class="btn btn-primary" onclick="generateOFIs()">Continue onto OFI Recommendations</button>
             </div>
 
             <!-- OFI Risk Matrix Visualization -->
@@ -894,7 +966,6 @@
                             </tr>
                             <tr>
                                 <th class="likelihood-header">Possible</th>
-                                <td class="matrix-cell low" data-likelihood="3" data-impact="1">Low</td>
                                 <td class="matrix-cell low" data-likelihood="3" data-impact="2">Low</td>
                                 <td class="matrix-cell medium" data-likelihood="3" data-impact="3">Medium</td>
                                 <td class="matrix-cell high" data-likelihood="3" data-impact="4">High</td>
@@ -1219,31 +1290,44 @@
             const gridHtml = filteredRequirements.map(req => {
                 const response = assessmentData.responses[req.uuid] || { satisfied: false, response: '', gap: true };
                 const statusClass = response.satisfied ? 'satisfied' : '';
+                const headerClass = response.satisfied ? 'satisfied' : '';
+                const isCollapsed = response.satisfied; // Auto-collapse satisfied requirements
+                const contentClass = isCollapsed ? 'collapsed' : '';
+                const iconClass = isCollapsed ? 'collapsed' : '';
+                const cardClass = isCollapsed ? 'collapsed' : '';
                 
                 return `
-                    <div class="control-card">
-                        <div class="control-header">
-                            <div class="control-id">${req.controlId}</div>
+                    <div class="control-card ${cardClass}">
+                        <div class="control-header ${headerClass}" onclick="toggleAccordion('${req.uuid}')">
+                            <div class="control-title-section">
+                                <div class="accordion-icon ${iconClass}" id="icon-${req.uuid}">▼</div>
+                                <div class="control-id">${req.controlId}</div>
+                                <h3 style="margin: 0; color: #2c3e50; font-size: 1.1em;">${req.title}</h3>
+                            </div>
                             <div class="control-status">
                                 <div class="status-indicator ${statusClass}"></div>
-                                <span>${response.satisfied ? 'Satisfied' : 'Gap'}</span>
+                                <span style="font-weight: 600;">${response.satisfied ? 'Satisfied' : 'Gap'}</span>
                             </div>
                         </div>
-                        <h3 style="margin-bottom: 10px; color: #2c3e50;">${req.title}</h3>
-                        <div class="control-description">${req.description}</div>
-                        <div class="control-actions">
-                            <button class="btn ${response.satisfied ? 'btn-success' : 'btn-secondary'}" 
-                                    onclick="toggleSatisfaction('${req.uuid}', true)">
-                                Mark Satisfied
-                            </button>
-                            <button class="btn ${!response.satisfied ? 'btn-danger' : 'btn-secondary'}" 
-                                    onclick="toggleSatisfaction('${req.uuid}', false)">
-                                Mark Gap
-                            </button>
-                        </div>
-                        <div class="response-area">
-                            <textarea placeholder="Describe how this requirement is satisfied or explain the gap..." 
-                                      onchange="updateResponse('${req.uuid}', this.value)">${response.response}</textarea>
+                        <div class="control-content ${contentClass}" id="content-${req.uuid}">
+                            <div class="control-description" style="margin-bottom: 20px; line-height: 1.6; color: #555; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                                ${req.description}
+                            </div>
+                            <div class="control-actions" style="margin-bottom: 20px;">
+                                <button class="btn ${response.satisfied ? 'btn-success' : 'btn-secondary'}" 
+                                        onclick="toggleSatisfaction('${req.uuid}', true)">
+                                    Mark Satisfied
+                                </button>
+                                <button class="btn ${!response.satisfied ? 'btn-danger' : 'btn-secondary'}" 
+                                        onclick="toggleSatisfaction('${req.uuid}', false)">
+                                    Mark Gap
+                                </button>
+                            </div>
+                            <div class="response-area">
+                                <textarea placeholder="Describe how this requirement is satisfied or explain the gap..." 
+                                          onchange="updateResponse('${req.uuid}', this.value)"
+                                          style="width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; resize: vertical; transition: border-color 0.3s ease;">${response.response}</textarea>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1271,6 +1355,86 @@
             }
             
             assessmentData.responses[uuid].response = response;
+        }
+
+        function toggleAccordion(uuid) {
+            const content = document.getElementById(`content-${uuid}`);
+            const icon = document.getElementById(`icon-${uuid}`);
+            const header = content.parentElement.querySelector('.control-header');
+            const card = content.parentElement;
+            
+            if (content.classList.contains('collapsed')) {
+                // Expand
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                card.classList.remove('collapsed');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                
+                // Reset max-height after animation
+                setTimeout(() => {
+                    if (!content.classList.contains('collapsed')) {
+                        content.style.maxHeight = 'none';
+                    }
+                }, 300);
+            } else {
+                // Collapse
+                content.style.maxHeight = content.scrollHeight + 'px';
+                // Force reflow
+                content.offsetHeight;
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+                card.classList.add('collapsed');
+                content.style.maxHeight = '0px';
+            }
+        }
+
+        // Accordion Control Functions
+        function expandAllRequirements() {
+            currentRequirements.forEach(req => {
+                const content = document.getElementById(`content-${req.uuid}`);
+                const icon = document.getElementById(`icon-${req.uuid}`);
+                const card = content?.parentElement;
+                
+                if (content && content.classList.contains('collapsed')) {
+                    content.classList.remove('collapsed');
+                    icon?.classList.remove('collapsed');
+                    card?.classList.remove('collapsed');
+                    content.style.maxHeight = 'none';
+                }
+            });
+        }
+
+        function collapseAllRequirements() {
+            currentRequirements.forEach(req => {
+                const content = document.getElementById(`content-${req.uuid}`);
+                const icon = document.getElementById(`icon-${req.uuid}`);
+                const card = content?.parentElement;
+                
+                if (content && !content.classList.contains('collapsed')) {
+                    content.classList.add('collapsed');
+                    icon?.classList.add('collapsed');
+                    card?.classList.add('collapsed');
+                    content.style.maxHeight = '0px';
+                }
+            });
+        }
+
+        function collapseSatisfiedRequirements() {
+            currentRequirements.forEach(req => {
+                const response = assessmentData.responses[req.uuid];
+                if (response && response.satisfied) {
+                    const content = document.getElementById(`content-${req.uuid}`);
+                    const icon = document.getElementById(`icon-${req.uuid}`);
+                    const card = content?.parentElement;
+                    
+                    if (content && !content.classList.contains('collapsed')) {
+                        content.classList.add('collapsed');
+                        icon?.classList.add('collapsed');
+                        card?.classList.add('collapsed');
+                        content.style.maxHeight = '0px';
+                    }
+                }
+            });
         }
 
         function updateResultsTable() {
@@ -1341,7 +1505,7 @@
                         <div style="margin-bottom: 15px;">
                             <label><strong>Recommendation:</strong></label>
                             <textarea placeholder="Describe the recommended action to address this gap..." 
-                                      style="width: 100%; min-height: 80px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
+                                      style="width: 100%; min-height: 200px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
                                       onchange="updateOFI('${req.uuid}', 'recommendation', this.value)">${ofi.recommendation}</textarea>
                         </div>
 
@@ -1367,15 +1531,15 @@
                                     </div>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label><strong>Impact Description:</strong></label>
+                                    <label><strong>Initial Impact Description:</strong></label>
                                     <textarea placeholder="Describe the potential business impact if this risk materializes..." 
-                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'initialRisk.impactDescription', this.value)">${ofi.initialRisk.impactDescription || ''}</textarea>
                                 </div>
                                 <div style="margin-bottom: 10px;">
-                                    <label><strong>Likelihood Description:</strong></label>
+                                    <label><strong>Initial Likelihood Description:</strong></label>
                                     <textarea placeholder="Explain why this likelihood rating was selected..." 
-                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'initialRisk.likelihoodDescription', this.value)">${ofi.initialRisk.likelihoodDescription || ''}</textarea>
                                 </div>
                                 <div class="risk-score ${getRiskClass(initialRiskScore)}" id="initial-risk-${req.uuid}" style="padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;">
@@ -1406,13 +1570,13 @@
                                 <div style="margin-bottom: 10px;">
                                     <label><strong>Residual Impact Description:</strong></label>
                                     <textarea placeholder="Describe the reduced impact after implementing the recommendation..." 
-                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'residualRisk.impactDescription', this.value)">${ofi.residualRisk.impactDescription || ''}</textarea>
                                 </div>
                                 <div style="margin-bottom: 10px;">
                                     <label><strong>Residual Likelihood Description:</strong></label>
                                     <textarea placeholder="Explain how the recommendation reduces the likelihood..." 
-                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em;"
+                                              style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'residualRisk.likelihoodDescription', this.value)">${ofi.residualRisk.likelihoodDescription || ''}</textarea>
                                 </div>
                                 <div class="risk-score ${getRiskClass(residualRiskScore)}" id="residual-risk-${req.uuid}" style="padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;">
@@ -1422,7 +1586,7 @@
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                            <h5>CIA Impact Ratings (1-5 scale)</h5>
+                            <h5>CIA Impact Ratings (1-5 scale) - Environmental Modifier (context only, doesn't effect score)</h5>
                             <div class="cia-ratings">
                                 <div class="cia-rating">
                                     <label>Confidentiality</label>
