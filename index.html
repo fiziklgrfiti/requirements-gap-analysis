@@ -12,14 +12,13 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        body {
             font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
             font-weight: 500;
             font-style: normal;
-            
-        }
-
-        body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -356,9 +355,9 @@
             color: white;
         }
 
-        .risk-low { background: #27ae60; color: white; text-transform: uppercase;}
-        .risk-medium { background: #f39c12; color: white; text-transform: uppercase;}
-        .risk-high { background: #e74c3c; color: white; text-transform: uppercase;}
+        .risk-low { background: #27ae60; color: white; }
+        .risk-medium { background: #f39c12; color: white; }
+        .risk-high { background: #e74c3c; color: white; }
 
         .ofi-section {
             margin-top: 30px;
@@ -893,8 +892,7 @@
                 <div id="ofi-container">
                     <!-- OFIs will be populated here -->
                 </div>
-                <br/>
-                <button class="btn btn-primary" onclick="generateOFIs()">Continue onto OFI Recommendations</button>
+                <button class="btn btn-primary" onclick="generateOFIs()">Generate OFI Recommendations</button>
             </div>
 
             <!-- OFI Risk Matrix Visualization -->
@@ -1505,7 +1503,7 @@
                         <div style="margin-bottom: 15px;">
                             <label><strong>Recommendation:</strong></label>
                             <textarea placeholder="Describe the recommended action to address this gap..." 
-                                      style="width: 100%; min-height: 200px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
+                                      style="width: 100%; min-height: 80px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
                                       onchange="updateOFI('${req.uuid}', 'recommendation', this.value)">${ofi.recommendation}</textarea>
                         </div>
 
@@ -1586,7 +1584,7 @@
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                            <h5>CIA Impact Ratings (1-5 scale) - Environmental Modifier (context only, doesn't effect score)</h5>
+                            <h5>CIA Impact Ratings (1-5 scale)</h5>
                             <div class="cia-ratings">
                                 <div class="cia-rating">
                                     <label>Confidentiality</label>
@@ -1887,8 +1885,8 @@
             if (gaps.length === 0) return;
 
             // Create SVG container for arrows if it doesn't exist
-            const matrixContainer = document.querySelector('#ofi-risk-matrix-section .risk-matrix-container');
-            if (!matrixContainer) return;
+            const matrixTable = document.getElementById('ofi-risk-matrix');
+            if (!matrixTable) return;
 
             let arrowSvg = document.getElementById('ofi-arrows-svg');
             if (!arrowSvg) {
@@ -1900,27 +1898,35 @@
                 arrowSvg.style.width = '100%';
                 arrowSvg.style.height = '100%';
                 arrowSvg.style.pointerEvents = 'none';
-                arrowSvg.style.zIndex = '9';
+                arrowSvg.style.zIndex = '15';
 
-                // Create arrowhead marker
+                // Create arrowhead marker with dynamic color
                 const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-                const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-                marker.setAttribute('id', 'ofi-arrowhead');
-                marker.setAttribute('markerWidth', '10');
-                marker.setAttribute('markerHeight', '7');
-                marker.setAttribute('refX', '9');
-                marker.setAttribute('refY', '3.5');
-                marker.setAttribute('orient', 'auto');
-                marker.setAttribute('markerUnits', 'strokeWidth');
+                
+                // Create multiple arrowhead markers for different colors
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+                colors.forEach((color, i) => {
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                    marker.setAttribute('id', `ofi-arrowhead-${i + 1}`);
+                    marker.setAttribute('markerWidth', '10');
+                    marker.setAttribute('markerHeight', '7');
+                    marker.setAttribute('refX', '9');
+                    marker.setAttribute('refY', '3.5');
+                    marker.setAttribute('orient', 'auto');
+                    marker.setAttribute('markerUnits', 'strokeWidth');
 
-                const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                arrowPath.setAttribute('d', 'M 0 0 L 10 3.5 L 0 7 Z');
-                arrowPath.setAttribute('fill', '#2c3e50');
+                    const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    arrowPath.setAttribute('d', 'M 0 0 L 10 3.5 L 0 7 Z');
+                    arrowPath.setAttribute('fill', color);
 
-                marker.appendChild(arrowPath);
-                defs.appendChild(marker);
+                    marker.appendChild(arrowPath);
+                    defs.appendChild(marker);
+                });
+
                 arrowSvg.appendChild(defs);
 
+                // Position SVG over the table
+                const matrixContainer = matrixTable.parentElement;
                 matrixContainer.style.position = 'relative';
                 matrixContainer.appendChild(arrowSvg);
             }
@@ -1942,7 +1948,10 @@
                 // Add movement arrow if positions are different
                 if (ofi.initialRisk.likelihood !== ofi.residualRisk.likelihood || 
                     ofi.initialRisk.impact !== ofi.residualRisk.impact) {
-                    addOFIMovementArrow(ofi.initialRisk, ofi.residualRisk, colorClass, ofiId);
+                    // Delay arrow creation to ensure positions are rendered
+                    setTimeout(() => {
+                        addOFIMovementArrow(ofi.initialRisk, ofi.residualRisk, colorClass, ofiId, index + 1);
+                    }, 100);
                 }
             });
         }
@@ -1978,25 +1987,41 @@
             marker.textContent = ofiId;
             marker.title = `OFI-${ofiId} (${controlId}) - ${type === 'initial' ? 'Initial' : 'Residual'} Risk\nLikelihood: ${likelihood}, Impact: ${impact}`;
             
-            // Set color based on type - matching Bow Tie positioning
+            // Set color and position based on type
             if (type === 'initial') {
-                marker.classList.add(colorClass);
-                // Position like "BEFORE" - top left
-                marker.style.top = '8px';
-                marker.style.left = '8px';
+                // Initial risk marker - solid color, positioned top-left
+                marker.style.background = getColorFromClass(colorClass);
+                marker.style.color = 'white';
+                marker.style.border = '3px solid white';
+                marker.style.top = '6px';
+                marker.style.left = '6px';
             } else {
-                // Position like "AFTER" - top right
+                // Residual risk marker - white background with colored border, positioned top-right
                 marker.style.background = 'white';
                 marker.style.color = getColorFromClass(colorClass);
-                marker.style.borderColor = getColorFromClass(colorClass);
-                marker.style.top = '8px';
-                marker.style.right = '8px';
+                marker.style.border = `3px solid ${getColorFromClass(colorClass)}`;
+                marker.style.top = '6px';
+                marker.style.right = '6px';
             }
+
+            // Ensure proper positioning
+            marker.style.position = 'absolute';
+            marker.style.width = '20px';
+            marker.style.height = '20px';
+            marker.style.borderRadius = '50%';
+            marker.style.display = 'flex';
+            marker.style.alignItems = 'center';
+            marker.style.justifyContent = 'center';
+            marker.style.fontSize = '12px';
+            marker.style.fontWeight = 'bold';
+            marker.style.zIndex = '10';
+            marker.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+            marker.style.cursor = 'pointer';
 
             cell.appendChild(marker);
         }
 
-        function addOFIMovementArrow(initialRisk, residualRisk, colorClass, ofiId) {
+        function addOFIMovementArrow(initialRisk, residualRisk, colorClass, ofiId, colorIndex) {
             const initialCell = document.querySelector(
                 `#ofi-risk-matrix .matrix-cell[data-likelihood="${initialRisk.likelihood}"][data-impact="${initialRisk.impact}"]`
             );
@@ -2006,20 +2031,23 @@
 
             if (!initialCell || !residualCell || initialCell === residualCell) return;
 
-            const matrixContainer = document.querySelector('#ofi-risk-matrix-section .risk-matrix-container');
             const arrowSvg = document.getElementById('ofi-arrows-svg');
-            
-            if (!matrixContainer || !arrowSvg) return;
+            if (!arrowSvg) return;
 
-            // Get positions relative to container
-            const containerRect = matrixContainer.getBoundingClientRect();
+            // Get the table container for relative positioning
+            const matrixTable = document.getElementById('ofi-risk-matrix');
+            const tableRect = matrixTable.getBoundingClientRect();
+            const svgRect = arrowSvg.getBoundingClientRect();
+
+            // Calculate positions relative to the SVG
             const initialRect = initialCell.getBoundingClientRect();
             const residualRect = residualCell.getBoundingClientRect();
 
-            const initialX = initialRect.left - containerRect.left + initialRect.width / 2;
-            const initialY = initialRect.top - containerRect.top + initialRect.height / 2;
-            const residualX = residualRect.left - containerRect.left + residualRect.width / 2;
-            const residualY = residualRect.top - containerRect.top + residualRect.height / 2;
+            // Calculate center points relative to SVG coordinate system
+            const initialX = (initialRect.left + initialRect.width / 2) - svgRect.left;
+            const initialY = (initialRect.top + initialRect.height / 2) - svgRect.top;
+            const residualX = (residualRect.left + residualRect.width / 2) - svgRect.left;
+            const residualY = (residualRect.top + residualRect.height / 2) - svgRect.top;
 
             // Create the arrow line
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2031,7 +2059,7 @@
             line.setAttribute('stroke', getColorFromClass(colorClass));
             line.setAttribute('stroke-width', '3');
             line.setAttribute('stroke-dasharray', '8,4');
-            line.setAttribute('marker-end', 'url(#ofi-movement-arrowhead)');
+            line.setAttribute('marker-end', `url(#ofi-arrowhead-${colorIndex})`);
             line.setAttribute('opacity', '0.8');
 
             // Add tooltip
