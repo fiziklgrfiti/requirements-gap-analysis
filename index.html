@@ -38,6 +38,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -49,6 +50,66 @@
         .header p {
             font-size: 1.2em;
             opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #34495e;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(46px);
+        }
+
+        .mode-label {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
         }
 
         .main-content {
@@ -109,13 +170,41 @@
             background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
         }
 
-        .control-header.satisfied {
+        /* Implementation State Colors */
+        .control-header.fully-implemented {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             border-bottom-color: #c3e6cb;
         }
 
-        .control-header.satisfied:hover {
+        .control-header.largely-implemented {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-bottom-color: #ffeaa7;
+        }
+
+        .control-header.partially-implemented {
+            background: linear-gradient(135deg, #ffe5b4 0%, #ffd89b 100%);
+            border-bottom-color: #ffd89b;
+        }
+
+        .control-header.not-implemented {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-bottom-color: #f5c6cb;
+        }
+
+        .control-header.fully-implemented:hover {
             background: linear-gradient(135deg, #c3e6cb 0%, #b8dabd 100%);
+        }
+
+        .control-header.largely-implemented:hover {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+        }
+
+        .control-header.partially-implemented:hover {
+            background: linear-gradient(135deg, #ffd89b 0%, #fab1a0 100%);
+        }
+
+        .control-header.not-implemented:hover {
+            background: linear-gradient(135deg, #f5c6cb 0%, #e17055 100%);
         }
 
         .control-content {
@@ -170,8 +259,20 @@
             background: #e74c3c;
         }
 
-        .status-indicator.satisfied {
+        .status-indicator.fully-implemented {
             background: #27ae60;
+        }
+
+        .status-indicator.largely-implemented {
+            background: #f1c40f;
+        }
+
+        .status-indicator.partially-implemented {
+            background: #e67e22;
+        }
+
+        .status-indicator.not-implemented {
+            background: #e74c3c;
         }
 
         .control-description {
@@ -187,6 +288,12 @@
             flex-wrap: wrap;
         }
 
+        .implementation-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -196,6 +303,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            font-size: 0.9em;
         }
 
         .btn-primary {
@@ -217,24 +325,45 @@
             background: #219a52;
         }
 
+        .btn-warning {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .btn-warning:hover {
+            background: #f39c12;
+        }
+
         .btn-danger {
-            background: #a32315;
+            background: #e74c3c;
             color: white;
-            font-weight: 900;
         }
 
         .btn-danger:hover {
-            background: #e44230;
+            background: #c0392b;
+        }
+
+        .btn-orange {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background: #d35400;
         }
 
         .btn-secondary {
-            background: #39813c;
+            background: #95a5a6;
             color: white;
-            font-weight: 900;
         }
 
         .btn-secondary:hover {
-            background: #87ca74;
+            background: #7f8c8d;
+        }
+
+        .btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .response-area {
@@ -291,12 +420,22 @@
             font-size: 0.85em;
         }
 
-        .gap-yes {
+        .gap-fully-implemented {
             background: #d4edda;
             color: #155724;
         }
 
-        .gap-no {
+        .gap-largely-implemented {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .gap-partially-implemented {
+            background: #ffe5b4;
+            color: #a0522d;
+        }
+
+        .gap-not-implemented {
             background: #f8d7da;
             color: #721c24;
         }
@@ -815,6 +954,22 @@
             font-size: 0.9em;
             padding: 8px 16px;
         }
+
+        /* Implementation percentage indicator */
+        .implementation-percentage {
+            font-size: 0.9em;
+            color: #666;
+            margin-left: 8px;
+        }
+
+        /* Mode-specific styling */
+        .simple-mode .implementation-buttons .btn:not(.active) {
+            display: none;
+        }
+
+        .simple-mode .implementation-buttons .btn.active {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -822,6 +977,16 @@
         <div class="header">
             <h1>OSCAL Requirements Gap Analysis Tool</h1>
             <p>Assess compliance gaps against security control requirements</p>
+            
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <span class="mode-label">Simple Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="analysis-mode-toggle" onchange="toggleAnalysisMode()">
+                    <span class="slider"></span>
+                </label>
+                <span class="mode-label">Detailed Mode</span>
+            </div>
         </div>
 
         <div class="main-content">
@@ -863,7 +1028,7 @@
                 <div class="accordion-controls">
                     <button class="btn btn-primary" onclick="expandAllRequirements()">Expand All</button>
                     <button class="btn btn-secondary" onclick="collapseAllRequirements()">Collapse All</button>
-                    <button class="btn btn-success" onclick="collapseSatisfiedRequirements()">Collapse Satisfied</button>
+                    <button class="btn btn-success" onclick="collapseFullyImplementedRequirements()">Collapse Fully Implemented</button>
                 </div>
                 <div class="controls-grid" id="controls-grid">
                     <!-- Controls will be populated here -->
@@ -878,9 +1043,9 @@
                         <tr>
                             <th>Control ID</th>
                             <th>Title</th>
-                            <th>Status</th>
+                            <th>Implementation State</th>
                             <th>Response</th>
-                            <th>Gap</th>
+                            <th>Coverage</th>
                         </tr>
                     </thead>
                     <tbody id="results-tbody">
@@ -896,7 +1061,7 @@
                     <!-- OFIs will be populated here -->
                 </div>
                 <br/>
-                <button class="btn btn-primary" onclick="generateOFIs()">Create OFI recommendations for each gap</button>
+                <button class="btn btn-primary" onclick="generateOFIs()">Create OFI recommendations for implementation gaps</button>
             </div>
 
             <!-- OFI Risk Matrix Visualization -->
@@ -1014,7 +1179,36 @@
         let assessmentData = {
             requirements: [],
             responses: {},
-            ofis: {}
+            ofis: {},
+            mode: 'simple' // 'simple' or 'detailed'
+        };
+
+        // Implementation states with their properties
+        const implementationStates = {
+            'not-implemented': {
+                label: 'Not Implemented',
+                percentage: 0,
+                satisfied: false,
+                riskMultiplier: 1.0
+            },
+            'partially-implemented': {
+                label: 'Partially Implemented',
+                percentage: 25,
+                satisfied: false,
+                riskMultiplier: 0.8
+            },
+            'largely-implemented': {
+                label: 'Largely Implemented',
+                percentage: 75,
+                satisfied: false,
+                riskMultiplier: 0.6
+            },
+            'fully-implemented': {
+                label: 'Fully Implemented',
+                percentage: 100,
+                satisfied: true,
+                riskMultiplier: 0.2
+            }
         };
 
         // Default PCI DSS data
@@ -1135,6 +1329,8 @@
         function init() {
             setupEventListeners();
             loadDefaultRequirements();
+            // Set initial mode
+            updateModeUI();
         }
 
         function setupEventListeners() {
@@ -1142,18 +1338,37 @@
             document.getElementById('assessment-file').addEventListener('change', handleAssessmentFileLoad);
         }
 
+        function toggleAnalysisMode() {
+            const toggle = document.getElementById('analysis-mode-toggle');
+            assessmentData.mode = toggle.checked ? 'detailed' : 'simple';
+            updateModeUI();
+            renderRequirements();
+            updateStatsOverview();
+            updateResultsTable();
+        }
+
+        function updateModeUI() {
+            const body = document.body;
+            if (assessmentData.mode === 'simple') {
+                body.classList.add('simple-mode');
+                body.classList.remove('detailed-mode');
+            } else {
+                body.classList.remove('simple-mode');
+                body.classList.add('detailed-mode');
+            }
+        }
+
         function loadDefaultRequirements() {
             try {
                 currentRequirements = defaultPCIData.catalog.securityControls;
                 assessmentData.requirements = currentRequirements;
                 
-                // Initialize responses
+                // Initialize responses with default implementation state
                 currentRequirements.forEach(req => {
                     if (!assessmentData.responses[req.uuid]) {
                         assessmentData.responses[req.uuid] = {
-                            satisfied: false,
-                            response: '',
-                            gap: true
+                            implementationState: 'not-implemented',
+                            response: ''
                         };
                     }
                 });
@@ -1184,9 +1399,8 @@
                         currentRequirements.forEach(req => {
                             if (!assessmentData.responses[req.uuid]) {
                                 assessmentData.responses[req.uuid] = {
-                                    satisfied: false,
-                                    response: '',
-                                    gap: true
+                                    implementationState: 'not-implemented',
+                                    response: ''
                                 };
                             }
                         });
@@ -1218,6 +1432,15 @@
                         assessmentData = data;
                         currentRequirements = data.requirements;
                         
+                        // Ensure mode is set
+                        if (!assessmentData.mode) {
+                            assessmentData.mode = 'simple';
+                        }
+                        
+                        // Update mode toggle
+                        document.getElementById('analysis-mode-toggle').checked = assessmentData.mode === 'detailed';
+                        updateModeUI();
+                        
                         updateStatsOverview();
                         populateFamilyFilter();
                         renderRequirements();
@@ -1241,30 +1464,89 @@
 
         function updateStatsOverview() {
             const total = currentRequirements.length;
-            const satisfied = Object.values(assessmentData.responses).filter(r => r.satisfied).length;
-            const gaps = total - satisfied;
-            const coverage = total > 0 ? Math.round((satisfied / total) * 100) : 0;
-
-            const statsHtml = `
-                <div class="stat-card">
-                    <div class="stat-number">${total}</div>
-                    <div class="stat-label">Total Requirements</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${satisfied}</div>
-                    <div class="stat-label">Satisfied</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${gaps}</div>
-                    <div class="stat-label">Gaps Identified</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${coverage}%</div>
-                    <div class="stat-label">Coverage</div>
-                </div>
-            `;
             
-            document.getElementById('stats-overview').innerHTML = statsHtml;
+            if (assessmentData.mode === 'simple') {
+                // Simple mode stats
+                const satisfied = Object.values(assessmentData.responses).filter(r => 
+                    implementationStates[r.implementationState]?.satisfied
+                ).length;
+                const gaps = total - satisfied;
+                const coverage = total > 0 ? Math.round((satisfied / total) * 100) : 0;
+
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${total}</div>
+                        <div class="stat-label">Total Requirements</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${satisfied}</div>
+                        <div class="stat-label">Satisfied</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${gaps}</div>
+                        <div class="stat-label">Gaps Identified</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${coverage}%</div>
+                        <div class="stat-label">Coverage</div>
+                    </div>
+                `;
+                
+                document.getElementById('stats-overview').innerHTML = statsHtml;
+            } else {
+                // Detailed mode stats
+                const states = {
+                    'not-implemented': 0,
+                    'partially-implemented': 0,
+                    'largely-implemented': 0,
+                    'fully-implemented': 0
+                };
+
+                Object.values(assessmentData.responses).forEach(r => {
+                    if (states.hasOwnProperty(r.implementationState)) {
+                        states[r.implementationState]++;
+                    }
+                });
+
+                // Calculate weighted coverage
+                let weightedScore = 0;
+                Object.values(assessmentData.responses).forEach(r => {
+                    const state = implementationStates[r.implementationState];
+                    if (state) {
+                        weightedScore += state.percentage;
+                    }
+                });
+                const weightedCoverage = total > 0 ? Math.round(weightedScore / (total * 100) * 100) : 0;
+
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${total}</div>
+                        <div class="stat-label">Total Requirements</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${states['fully-implemented']}</div>
+                        <div class="stat-label">Fully Implemented</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${states['largely-implemented']}</div>
+                        <div class="stat-label">Largely Implemented</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${states['partially-implemented']}</div>
+                        <div class="stat-label">Partially Implemented</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${states['not-implemented']}</div>
+                        <div class="stat-label">Not Implemented</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${weightedCoverage}%</div>
+                        <div class="stat-label">Weighted Coverage</div>
+                    </div>
+                `;
+                
+                document.getElementById('stats-overview').innerHTML = statsHtml;
+            }
         }
 
         function populateFamilyFilter() {
@@ -1291,13 +1573,48 @@
                 : currentRequirements;
 
             const gridHtml = filteredRequirements.map(req => {
-                const response = assessmentData.responses[req.uuid] || { satisfied: false, response: '', gap: true };
-                const statusClass = response.satisfied ? 'satisfied' : '';
-                const headerClass = response.satisfied ? 'satisfied' : '';
-                const isCollapsed = response.satisfied; // Auto-collapse satisfied requirements
+                const response = assessmentData.responses[req.uuid] || { implementationState: 'not-implemented', response: '' };
+                const state = implementationStates[response.implementationState];
+                const headerClass = response.implementationState;
+                const isCollapsed = response.implementationState === 'fully-implemented'; // Auto-collapse fully implemented
                 const contentClass = isCollapsed ? 'collapsed' : '';
                 const iconClass = isCollapsed ? 'collapsed' : '';
                 const cardClass = isCollapsed ? 'collapsed' : '';
+                
+                // Create implementation buttons
+                const implementationButtons = Object.keys(implementationStates).map(stateKey => {
+                    const stateInfo = implementationStates[stateKey];
+                    const isActive = response.implementationState === stateKey;
+                    let btnClass = 'btn ';
+                    
+                    switch(stateKey) {
+                        case 'fully-implemented':
+                            btnClass += 'btn-success';
+                            break;
+                        case 'largely-implemented':
+                            btnClass += 'btn-warning';
+                            break;
+                        case 'partially-implemented':
+                            btnClass += 'btn-orange';
+                            break;
+                        case 'not-implemented':
+                            btnClass += 'btn-danger';
+                            break;
+                    }
+                    
+                    if (isActive) {
+                        btnClass += ' active';
+                    }
+                    
+                    return `
+                        <button class="${btnClass}" 
+                                onclick="setImplementationState('${req.uuid}', '${stateKey}')"
+                                title="${stateInfo.label} (${stateInfo.percentage}% coverage)">
+                            ${stateInfo.label}
+                            ${assessmentData.mode === 'detailed' ? `<span class="implementation-percentage">(${stateInfo.percentage}%)</span>` : ''}
+                        </button>
+                    `;
+                }).join('');
                 
                 return `
                     <div class="control-card ${cardClass}">
@@ -1308,8 +1625,9 @@
                                 <h3 style="margin: 0; color: #2c3e50; font-size: 1.1em;">${req.title}</h3>
                             </div>
                             <div class="control-status">
-                                <div class="status-indicator ${statusClass}"></div>
-                                <span style="font-weight: 600;">${response.satisfied ? 'Satisfied' : 'Gap'}</span>
+                                <div class="status-indicator ${response.implementationState}"></div>
+                                <span style="font-weight: 600;">${state.label}</span>
+                                ${assessmentData.mode === 'detailed' ? `<span class="implementation-percentage">(${state.percentage}%)</span>` : ''}
                             </div>
                         </div>
                         <div class="control-content ${contentClass}" id="content-${req.uuid}">
@@ -1317,17 +1635,12 @@
                                 ${req.description}
                             </div>
                             <div class="control-actions" style="margin-bottom: 20px;">
-                                <button class="btn ${response.satisfied ? 'btn-success' : 'btn-secondary'}" 
-                                        onclick="toggleSatisfaction('${req.uuid}', true)">
-                                    Mark Satisfied
-                                </button>
-                                <button class="btn ${!response.satisfied ? 'btn-danger' : 'btn-secondary'}" 
-                                        onclick="toggleSatisfaction('${req.uuid}', false)">
-                                    Mark Gap
-                                </button>
+                                <div class="implementation-buttons">
+                                    ${implementationButtons}
+                                </div>
                             </div>
                             <div class="response-area">
-                                <textarea placeholder="Describe how this requirement is satisfied or explain the gap..." 
+                                <textarea placeholder="Describe the current implementation state, evidence, or gaps..." 
                                           onchange="updateResponse('${req.uuid}', this.value)"
                                           style="width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; resize: vertical; transition: border-color 0.3s ease;">${response.response}</textarea>
                             </div>
@@ -1339,13 +1652,12 @@
             document.getElementById('controls-grid').innerHTML = gridHtml;
         }
 
-        function toggleSatisfaction(uuid, satisfied) {
+        function setImplementationState(uuid, state) {
             if (!assessmentData.responses[uuid]) {
-                assessmentData.responses[uuid] = { satisfied: false, response: '', gap: true };
+                assessmentData.responses[uuid] = { implementationState: 'not-implemented', response: '' };
             }
             
-            assessmentData.responses[uuid].satisfied = satisfied;
-            assessmentData.responses[uuid].gap = !satisfied;
+            assessmentData.responses[uuid].implementationState = state;
             
             updateStatsOverview();
             renderRequirements(document.getElementById('family-filter').value);
@@ -1354,7 +1666,7 @@
 
         function updateResponse(uuid, response) {
             if (!assessmentData.responses[uuid]) {
-                assessmentData.responses[uuid] = { satisfied: false, response: '', gap: true };
+                assessmentData.responses[uuid] = { implementationState: 'not-implemented', response: '' };
             }
             
             assessmentData.responses[uuid].response = response;
@@ -1422,10 +1734,10 @@
             });
         }
 
-        function collapseSatisfiedRequirements() {
+        function collapseFullyImplementedRequirements() {
             currentRequirements.forEach(req => {
                 const response = assessmentData.responses[req.uuid];
-                if (response && response.satisfied) {
+                if (response && response.implementationState === 'fully-implemented') {
                     const content = document.getElementById(`content-${req.uuid}`);
                     const icon = document.getElementById(`icon-${req.uuid}`);
                     const card = content?.parentElement;
@@ -1444,17 +1756,17 @@
             const tbody = document.getElementById('results-tbody');
             
             const rowsHtml = currentRequirements.map(req => {
-                const response = assessmentData.responses[req.uuid] || { satisfied: false, response: '', gap: true };
-                const gapClass = response.gap ? 'gap-no' : 'gap-yes';
-                const gapText = response.gap ? 'Gap' : 'Covered';
+                const response = assessmentData.responses[req.uuid] || { implementationState: 'not-implemented', response: '' };
+                const state = implementationStates[response.implementationState];
+                const gapClass = `gap-${response.implementationState}`;
                 
                 return `
                     <tr>
                         <td><strong>${req.controlId}</strong></td>
                         <td>${req.title}</td>
-                        <td><span class="gap-indicator ${gapClass}">${gapText}</span></td>
+                        <td><span class="gap-indicator ${gapClass}">${state.label}</span></td>
                         <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${response.response || 'No response provided'}</td>
-                        <td>${response.gap ? 'Requires attention' : 'Adequately controlled'}</td>
+                        <td>${state.percentage}% Coverage</td>
                     </tr>
                 `;
             }).join('');
@@ -1463,18 +1775,28 @@
         }
 
         function generateOFIs() {
-            const gaps = currentRequirements.filter(req => {
+            // In detailed mode, generate OFIs for all non-fully-implemented requirements
+            // In simple mode, generate OFIs for gaps (non-satisfied requirements)
+            const requirementsNeedingOFI = currentRequirements.filter(req => {
                 const response = assessmentData.responses[req.uuid];
-                return response && response.gap;
+                if (!response) return true;
+                
+                if (assessmentData.mode === 'detailed') {
+                    return response.implementationState !== 'fully-implemented';
+                } else {
+                    return !implementationStates[response.implementationState]?.satisfied;
+                }
             });
 
-            if (gaps.length === 0) {
-                document.getElementById('ofi-container').innerHTML = '<p style="color: #27ae60; font-weight: bold;">No gaps identified - all requirements are satisfied!</p>';
+            if (requirementsNeedingOFI.length === 0) {
+                document.getElementById('ofi-container').innerHTML = '<p style="color: #27ae60; font-weight: bold;">No implementation gaps identified - all requirements are fully implemented!</p>';
                 return;
             }
 
-            const ofisHtml = gaps.map(req => {
+            const ofisHtml = requirementsNeedingOFI.map(req => {
                 const response = assessmentData.responses[req.uuid];
+                const currentState = response ? implementationStates[response.implementationState] : implementationStates['not-implemented'];
+                
                 const ofi = assessmentData.ofis[req.uuid] || {
                     recommendation: '',
                     initialRisk: { 
@@ -1493,7 +1815,14 @@
                     assetClass: ''
                 };
 
-                const initialRiskScore = calculateRiskScore(ofi.initialRisk.likelihood, ofi.initialRisk.impact);
+                // Adjust initial risk based on current implementation state
+                const adjustedInitialRisk = {
+                    ...ofi.initialRisk,
+                    likelihood: Math.ceil(ofi.initialRisk.likelihood * currentState.riskMultiplier),
+                    impact: ofi.initialRisk.impact
+                };
+
+                const initialRiskScore = calculateRiskScore(adjustedInitialRisk.likelihood, adjustedInitialRisk.impact);
                 const residualRiskScore = calculateRiskScore(ofi.residualRisk.likelihood, ofi.residualRisk.impact);
 
                 return `
@@ -1501,20 +1830,27 @@
                         <h4 style="color: #2c3e50; margin-bottom: 15px;">OFI for ${req.controlId}: ${req.title}</h4>
                         
                         <div style="margin-bottom: 15px;">
-                            <strong>Gap Description:</strong>
-                            <p style="margin: 5px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">${response.response || 'No specific gap description provided'}</p>
+                            <strong>Current Implementation State:</strong>
+                            <span class="gap-indicator gap-${response?.implementationState || 'not-implemented'}" style="margin-left: 10px;">
+                                ${currentState.label} (${currentState.percentage}% coverage)
+                            </span>
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                            <label><strong>Recommendation:</strong></label>
-                            <textarea placeholder="Describe the recommended action to address this gap..." 
+                            <strong>Current Assessment:</strong>
+                            <p style="margin: 5px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">${response?.response || 'No assessment provided'}</p>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label><strong>Recommendation for Improvement:</strong></label>
+                            <textarea placeholder="Describe the recommended action to reach full implementation..." 
                                       style="width: 100%; min-height: 80px; margin-top: 5px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 4px;"
                                       onchange="updateOFI('${req.uuid}', 'recommendation', this.value)">${ofi.recommendation}</textarea>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
                             <div>
-                                <h5>Initial Risk (Before Treatment)</h5>
+                                <h5>Current Risk (${currentState.label})</h5>
                                 <div style="display: flex; gap: 10px; margin: 10px 0;">
                                     <div>
                                         <label>Impact:</label>
@@ -1547,11 +1883,12 @@
                                 </div>
                                 <div class="risk-score ${getRiskClass(initialRiskScore)}" id="initial-risk-${req.uuid}" style="padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;">
                                     Risk Score: ${initialRiskScore} (${getRiskLevel(initialRiskScore)})
+                                    ${currentState.percentage < 100 ? `<br><small>Adjusted for ${currentState.percentage}% implementation</small>` : ''}
                                 </div>
                             </div>
 
                             <div>
-                                <h5>Residual Risk (After Treatment)</h5>
+                                <h5>Target Risk (After Full Implementation)</h5>
                                 <div style="display: flex; gap: 10px; margin: 10px 0;">
                                     <div>
                                         <label>Impact:</label>
@@ -1572,13 +1909,13 @@
                                 </div>
                                 <div style="margin-bottom: 10px;">
                                     <label><strong>Residual Impact Description:</strong></label>
-                                    <textarea placeholder="Describe the reduced impact after implementing the recommendation..." 
+                                    <textarea placeholder="Describe the reduced impact after full implementation..." 
                                               style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'residualRisk.impactDescription', this.value)">${ofi.residualRisk.impactDescription || ''}</textarea>
                                 </div>
                                 <div style="margin-bottom: 10px;">
                                     <label><strong>Residual Likelihood Description:</strong></label>
-                                    <textarea placeholder="Explain how the recommendation reduces the likelihood..." 
+                                    <textarea placeholder="Explain how full implementation reduces the likelihood..." 
                                               style="width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;"
                                               onchange="updateOFI('${req.uuid}', 'residualRisk.likelihoodDescription', this.value)">${ofi.residualRisk.likelihoodDescription || ''}</textarea>
                                 </div>
@@ -1647,17 +1984,25 @@
         }
 
         function updateOFIComparisonTable() {
-            const gaps = currentRequirements.filter(req => {
+            const requirementsNeedingOFI = currentRequirements.filter(req => {
                 const response = assessmentData.responses[req.uuid];
-                return response && response.gap;
+                if (!response) return true;
+                
+                if (assessmentData.mode === 'detailed') {
+                    return response.implementationState !== 'fully-implemented';
+                } else {
+                    return !implementationStates[response.implementationState]?.satisfied;
+                }
             });
 
             const tbody = document.getElementById('ofi-comparison-tbody');
-            if (!tbody || gaps.length === 0) return;
+            if (!tbody || requirementsNeedingOFI.length === 0) return;
 
             let tableRows = [];
 
-            gaps.forEach((req, index) => {
+            requirementsNeedingOFI.forEach((req, index) => {
+                const response = assessmentData.responses[req.uuid];
+                const currentState = response ? implementationStates[response.implementationState] : implementationStates['not-implemented'];
                 const ofi = assessmentData.ofis[req.uuid];
                 if (!ofi || !ofi.initialRisk || !ofi.residualRisk) return;
 
@@ -1665,9 +2010,10 @@
                 const colorClass = `ofi-color-${((index % 8) + 1)}`;
                 const colorStyle = `background: ${getColorFromClass(colorClass)}; width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 8px;`;
 
-                // Before Controls row
-                const initialRiskScore = ofi.initialRisk.likelihood * ofi.initialRisk.impact;
-                const initialRiskLevel = getRiskLevel(initialRiskScore);
+                // Current Risk (adjusted for implementation state)
+                const adjustedLikelihood = Math.ceil(ofi.initialRisk.likelihood * currentState.riskMultiplier);
+                const currentRiskScore = adjustedLikelihood * ofi.initialRisk.impact;
+                const currentRiskLevel = getRiskLevel(currentRiskScore);
 
                 tableRows.push(`
                     <tr>
@@ -1675,24 +2021,25 @@
                             <div style="display: flex; align-items: center;">
                                 <div style="${colorStyle}"></div>
                                 OFI-${ofiId}<br>
-                                <small style="color: #666; font-weight: normal;">${req.controlId}</small>
+                                <small style="color: #666; font-weight: normal;">${req.controlId}</small><br>
+                                <small style="color: #666; font-weight: normal;">${currentState.label}</small>
                             </div>
                         </td>
-                        <td><strong>Before Controls</strong></td>
-                        <td>${ofi.initialRisk.likelihood}</td>
+                        <td><strong>Current Risk</strong></td>
+                        <td>${adjustedLikelihood}</td>
                         <td>${ofi.initialRisk.impact}</td>
-                        <td>${initialRiskScore}</td>
-                        <td><span style="padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; ${getRiskLevelStyle(initialRiskScore)}">${initialRiskLevel}</span></td>
+                        <td>${currentRiskScore}</td>
+                        <td><span style="padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; ${getRiskLevelStyle(currentRiskScore)}">${currentRiskLevel}</span></td>
                     </tr>
                 `);
 
-                // After Controls row
+                // Target Risk (after full implementation)
                 const residualRiskScore = ofi.residualRisk.likelihood * ofi.residualRisk.impact;
                 const residualRiskLevel = getRiskLevel(residualRiskScore);
 
                 tableRows.push(`
                     <tr>
-                        <td><strong>After Controls</strong></td>
+                        <td><strong>Target Risk</strong></td>
                         <td>${ofi.residualRisk.likelihood}</td>
                         <td>${ofi.residualRisk.impact}</td>
                         <td>${residualRiskScore}</td>
@@ -1764,11 +2111,14 @@
         }
 
         function updateRiskScores(uuid) {
+            const response = assessmentData.responses[uuid];
+            const currentState = response ? implementationStates[response.implementationState] : implementationStates['not-implemented'];
             const ofi = assessmentData.ofis[uuid];
             if (!ofi) return;
 
-            // Calculate new risk scores
-            const initialRiskScore = calculateRiskScore(ofi.initialRisk.likelihood, ofi.initialRisk.impact);
+            // Calculate adjusted initial risk and residual risk scores
+            const adjustedInitialLikelihood = Math.ceil(ofi.initialRisk.likelihood * currentState.riskMultiplier);
+            const initialRiskScore = calculateRiskScore(adjustedInitialLikelihood, ofi.initialRisk.impact);
             const residualRiskScore = calculateRiskScore(ofi.residualRisk.likelihood, ofi.residualRisk.impact);
 
             // Update initial risk display
@@ -1776,7 +2126,8 @@
             if (initialRiskElement) {
                 initialRiskElement.className = `risk-score ${getRiskClass(initialRiskScore)}`;
                 initialRiskElement.style.cssText = 'padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;';
-                initialRiskElement.textContent = `Risk Score: ${initialRiskScore} (${getRiskLevel(initialRiskScore)})`;
+                initialRiskElement.innerHTML = `Risk Score: ${initialRiskScore} (${getRiskLevel(initialRiskScore)})` +
+                    (currentState.percentage < 100 ? `<br><small>Adjusted for ${currentState.percentage}% implementation</small>` : '');
             }
 
             // Update residual risk display
@@ -1786,27 +2137,71 @@
                 residualRiskElement.style.cssText = 'padding: 10px; text-align: center; border-radius: 4px; color: white; font-weight: bold;';
                 residualRiskElement.textContent = `Risk Score: ${residualRiskScore} (${getRiskLevel(residualRiskScore)})`;
             }
+
+            // Update comparison table
+            updateOFIComparisonTable();
         }
 
         function exportResults() {
             const exportData = {
                 timestamp: new Date().toISOString(),
+                mode: assessmentData.mode,
                 requirements: currentRequirements,
                 responses: assessmentData.responses,
                 ofis: assessmentData.ofis,
                 summary: {
                     totalRequirements: currentRequirements.length,
-                    satisfiedRequirements: Object.values(assessmentData.responses).filter(r => r.satisfied).length,
-                    gapsIdentified: Object.values(assessmentData.responses).filter(r => r.gap).length,
-                    coveragePercentage: Math.round((Object.values(assessmentData.responses).filter(r => r.satisfied).length / currentRequirements.length) * 100)
+                    implementationStates: {},
+                    coverageMetrics: {}
                 }
             };
+
+            // Calculate implementation state summary
+            const states = {
+                'not-implemented': 0,
+                'partially-implemented': 0,
+                'largely-implemented': 0,
+                'fully-implemented': 0
+            };
+
+            Object.values(assessmentData.responses).forEach(r => {
+                if (states.hasOwnProperty(r.implementationState)) {
+                    states[r.implementationState]++;
+                }
+            });
+
+            exportData.summary.implementationStates = states;
+
+            // Calculate coverage metrics
+            if (assessmentData.mode === 'simple') {
+                const satisfied = Object.values(assessmentData.responses).filter(r => 
+                    implementationStates[r.implementationState]?.satisfied
+                ).length;
+                exportData.summary.coverageMetrics = {
+                    satisfied: satisfied,
+                    gaps: currentRequirements.length - satisfied,
+                    coveragePercentage: Math.round((satisfied / currentRequirements.length) * 100)
+                };
+            } else {
+                let weightedScore = 0;
+                Object.values(assessmentData.responses).forEach(r => {
+                    const state = implementationStates[r.implementationState];
+                    if (state) {
+                        weightedScore += state.percentage;
+                    }
+                });
+                exportData.summary.coverageMetrics = {
+                    weightedCoverage: Math.round(weightedScore / (currentRequirements.length * 100) * 100),
+                    fullyImplemented: states['fully-implemented'],
+                    totalGaps: states['not-implemented'] + states['partially-implemented'] + states['largely-implemented']
+                };
+            }
 
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `gap-analysis-results-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `gap-analysis-results-${assessmentData.mode}-${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1817,15 +2212,21 @@
 
         // OFI Risk Matrix Functions
         function setupOFIRiskMatrix() {
-            const gaps = currentRequirements.filter(req => {
+            const requirementsNeedingOFI = currentRequirements.filter(req => {
                 const response = assessmentData.responses[req.uuid];
-                return response && response.gap;
+                if (!response) return true;
+                
+                if (assessmentData.mode === 'detailed') {
+                    return response.implementationState !== 'fully-implemented';
+                } else {
+                    return !implementationStates[response.implementationState]?.satisfied;
+                }
             });
 
-            if (gaps.length === 0) return;
+            if (requirementsNeedingOFI.length === 0) return;
 
             // Initialize OFI data if missing
-            gaps.forEach(req => {
+            requirementsNeedingOFI.forEach(req => {
                 if (!assessmentData.ofis[req.uuid]) {
                     assessmentData.ofis[req.uuid] = {
                         recommendation: '',
@@ -1838,10 +2239,10 @@
             });
 
             // Create toggle controls for each OFI
-            createOFIToggles(gaps);
+            createOFIToggles(requirementsNeedingOFI);
             
             // Create matrix legend
-            createOFIMatrixLegend(gaps);
+            createOFIMatrixLegend(requirementsNeedingOFI);
             
             // Initialize matrix with all OFIs visible
             updateOFIRiskMatrix();
@@ -1895,20 +2296,28 @@
             // Clear existing OFI positions and arrows
             clearOFIMatrixElements();
 
-            const gaps = currentRequirements.filter(req => {
+            const requirementsNeedingOFI = currentRequirements.filter(req => {
                 const response = assessmentData.responses[req.uuid];
-                return response && response.gap;
+                if (!response) return true;
+                
+                if (assessmentData.mode === 'detailed') {
+                    return response.implementationState !== 'fully-implemented';
+                } else {
+                    return !implementationStates[response.implementationState]?.satisfied;
+                }
             });
 
-            if (gaps.length === 0) return;
+            if (requirementsNeedingOFI.length === 0) return;
 
-            console.log('Updating OFI Risk Matrix for', gaps.length, 'gaps');
+            console.log('Updating OFI Risk Matrix for', requirementsNeedingOFI.length, 'gaps');
 
             // Add OFI positions for visible OFIs first
-            gaps.forEach((req, index) => {
+            requirementsNeedingOFI.forEach((req, index) => {
                 const toggle = document.getElementById(`ofi-toggle-${req.uuid}`);
                 if (!toggle || !toggle.checked) return;
 
+                const response = assessmentData.responses[req.uuid];
+                const currentState = response ? implementationStates[response.implementationState] : implementationStates['not-implemented'];
                 const ofi = assessmentData.ofis[req.uuid];
                 if (!ofi || !ofi.initialRisk || !ofi.residualRisk) {
                     console.log('Missing OFI data for', req.controlId);
@@ -1918,13 +2327,16 @@
                 const ofiId = index + 1;
                 const colorClass = `ofi-color-${((index % 8) + 1)}`;
                 
+                // Adjust initial risk based on current implementation state
+                const adjustedLikelihood = Math.ceil(ofi.initialRisk.likelihood * currentState.riskMultiplier);
+                
                 console.log(`Adding OFI-${ofiId} positions:`, {
-                    initial: `L${ofi.initialRisk.likelihood}/I${ofi.initialRisk.impact}`,
-                    residual: `L${ofi.residualRisk.likelihood}/I${ofi.residualRisk.impact}`,
+                    current: `L${adjustedLikelihood}/I${ofi.initialRisk.impact} (${currentState.label})`,
+                    target: `L${ofi.residualRisk.likelihood}/I${ofi.residualRisk.impact}`,
                     color: colorClass
                 });
                 
-                addOFIRiskPosition(ofi.initialRisk.likelihood, ofi.initialRisk.impact, ofiId, colorClass, 'initial', req.controlId);
+                addOFIRiskPosition(adjustedLikelihood, ofi.initialRisk.impact, ofiId, colorClass, 'initial', req.controlId);
                 addOFIRiskPosition(ofi.residualRisk.likelihood, ofi.residualRisk.impact, ofiId, colorClass, 'residual', req.controlId);
             });
 
@@ -1933,20 +2345,28 @@
 
             // Add movement arrows with delay to ensure positions are rendered
             setTimeout(() => {
-                gaps.forEach((req, index) => {
+                requirementsNeedingOFI.forEach((req, index) => {
                     const toggle = document.getElementById(`ofi-toggle-${req.uuid}`);
                     if (!toggle || !toggle.checked) return;
 
+                    const response = assessmentData.responses[req.uuid];
+                    const currentState = response ? implementationStates[response.implementationState] : implementationStates['not-implemented'];
                     const ofi = assessmentData.ofis[req.uuid];
                     if (!ofi || !ofi.initialRisk || !ofi.residualRisk) return;
 
                     const ofiId = index + 1;
                     const colorClass = `ofi-color-${((index % 8) + 1)}`;
                     
+                    // Adjust initial risk for movement arrow
+                    const adjustedInitialRisk = {
+                        likelihood: Math.ceil(ofi.initialRisk.likelihood * currentState.riskMultiplier),
+                        impact: ofi.initialRisk.impact
+                    };
+                    
                     // Add movement arrow if positions are different
-                    if (ofi.initialRisk.likelihood !== ofi.residualRisk.likelihood || 
-                        ofi.initialRisk.impact !== ofi.residualRisk.impact) {
-                        addOFIMovementArrow(ofi.initialRisk, ofi.residualRisk, colorClass, ofiId, index + 1);
+                    if (adjustedInitialRisk.likelihood !== ofi.residualRisk.likelihood || 
+                        adjustedInitialRisk.impact !== ofi.residualRisk.impact) {
+                        addOFIMovementArrow(adjustedInitialRisk, ofi.residualRisk, colorClass, ofiId, index + 1);
                     }
                 });
             }, 200);
@@ -2029,7 +2449,7 @@
             const marker = document.createElement('div');
             marker.className = `ofi-risk-position ${type} ofi-${ofiId}`;
             marker.textContent = ofiId;
-            marker.title = `OFI-${ofiId} (${controlId}) - ${type === 'initial' ? 'Initial' : 'Residual'} Risk\nLikelihood: ${likelihood}, Impact: ${impact}`;
+            marker.title = `OFI-${ofiId} (${controlId}) - ${type === 'initial' ? 'Current' : 'Target'} Risk\nLikelihood: ${likelihood}, Impact: ${impact}`;
             
             // Base styles for all markers
             marker.style.position = 'absolute';
