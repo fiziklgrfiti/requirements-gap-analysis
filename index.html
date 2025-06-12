@@ -1392,24 +1392,39 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     if (data.catalog && data.catalog.securityControls) {
+                        // Complete reset of assessment data for new OSCAL file
                         currentRequirements = data.catalog.securityControls;
-                        assessmentData.requirements = currentRequirements;
+                        assessmentData = {
+                            requirements: currentRequirements,
+                            responses: {},
+                            ofis: {},
+                            mode: assessmentData.mode // Preserve current mode
+                        };
                         
-                        // Initialize responses
+                        // Initialize fresh responses for new requirements only
                         currentRequirements.forEach(req => {
-                            if (!assessmentData.responses[req.uuid]) {
-                                assessmentData.responses[req.uuid] = {
-                                    implementationState: 'not-implemented',
-                                    response: ''
-                                };
-                            }
+                            assessmentData.responses[req.uuid] = {
+                                implementationState: 'not-implemented',
+                                response: ''
+                            };
                         });
 
                         updateStatsOverview();
                         populateFamilyFilter();
                         renderRequirements();
                         updateResultsTable();
-                        updateStatus(`${currentRequirements.length} requirements loaded successfully`);
+                        
+                        // Hide OFI sections since this is a fresh assessment
+                        const ofiSection = document.getElementById('ofi-section');
+                        const ofiRiskMatrixSection = document.getElementById('ofi-risk-matrix-section');
+                        if (ofiSection) {
+                            document.getElementById('ofi-container').innerHTML = '';
+                        }
+                        if (ofiRiskMatrixSection) {
+                            ofiRiskMatrixSection.classList.add('hidden');
+                        }
+                        
+                        updateStatus(`${currentRequirements.length} requirements loaded successfully - new assessment started`);
                     } else {
                         throw new Error('Invalid OSCAL format');
                     }
